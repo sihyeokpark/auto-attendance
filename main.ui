@@ -6,96 +6,136 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>587</width>
-    <height>790</height>
+    <width>453</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Chatting</string>
   </property>
-  <widget class="QPushButton" name="btn_connect">
-   <property name="geometry">
-    <rect>
-     <x>440</x>
-     <y>20</y>
-     <width>111</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Connect</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
+  <property name="styleSheet">
+   <string notr="true">background-color: #2f3136;</string>
+  </property>
+  <widget class="QTextBrowser" name="tb_chat">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>81</width>
-     <height>51</height>
+     <width>301</width>
+     <height>611</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>3ds</family>
-     <pointsize>16</pointsize>
+     <family>에스코어 드림 5 Medium</family>
+     <pointsize>12</pointsize>
     </font>
    </property>
-   <property name="text">
-    <string>Name</string>
+   <property name="autoFillBackground">
+    <bool>true</bool>
    </property>
-  </widget>
-  <widget class="QLineEdit" name="le_name">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>20</y>
-     <width>311</width>
-     <height>51</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QTextBrowser" name="tb_chat">
-   <property name="geometry">
-    <rect>
-     <x>25</x>
-     <y>91</y>
-     <width>401</width>
-     <height>611</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="le_chat">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>710</y>
-     <width>401</width>
-     <height>51</height>
-    </rect>
+   <property name="styleSheet">
+    <string notr="true">backgorund-color: #ffffff;
+color: #ffffff;
+</string>
    </property>
   </widget>
   <widget class="QTextBrowser" name="tb_friendList">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>90</y>
-     <width>111</width>
-     <height>611</height>
+     <x>340</x>
+     <y>30</y>
+     <width>81</width>
+     <height>591</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>에스코어 드림 5 Medium</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">backgorund-color: #ffffff;
+border-radius: 20px;
+color: #ffffff;
+</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_send">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>710</y>
-     <width>111</width>
-     <height>51</height>
+     <x>330</x>
+     <y>640</y>
+     <width>101</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>에스코어 드림 5 Medium</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #9764ff;
+border: none;
+color: white;
+border-radius: 5px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+transition-duration: 0.4s;</string>
    </property>
    <property name="text">
     <string>Send</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_chat">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>640</y>
+     <width>301</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>에스코어 드림 5 Medium</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border: 0;
+border-radius: 15px;
+outline: none;
+padding-left: 10px;
+background-color: rgb(233, 233, 233);</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>20</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>에스코어 드림 5 Medium</family>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #ffffff;</string>
+   </property>
+   <property name="text">
+    <string>Friend List</string>
    </property>
   </widget>
  </widget>
