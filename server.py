@@ -16,14 +16,18 @@ def threaded(clientSocket, addr):
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':
                     print('receive message: ' + msgList[2])
-                    clientSocket.send(('Chat/Send/' + msgList[2]).decode())
-            elif msgList[0] == 'FriendList':
-                if msgList[1] == 'Add':
-                    print('add friendlist: ' + msgList[2])
-                    clientList.append((clientSocket, msgList[2]))
-                    print(clientList)
-                    clientSocket.send(('FriendList/Add/' + msgList[2]).decode())
-            clientSocket.send(data)
+                    clientSocket.send(('Chat/Send/' + msgList[2]).encode())
+            elif msgList[0] == 'Login':
+                if msgList[1] == 'exon':
+                    if msgList[2] == 'exon':
+                        print('add friendlist: ' + msgList[2])
+                        clientList.append((clientSocket, msgList[2]))
+                        print(clientList)
+                        clientSocket.send('Login/Success'.encode())
+                    else:
+                        clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
+                else:
+                    clientSocket.send('Login/Error/아이디가 존재하지 않습니다.'.encode())
 
     except ConnectionResetError as e:
         print('Disconnected by ' + addr[0], ':', addr[1])

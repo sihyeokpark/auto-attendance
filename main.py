@@ -56,9 +56,14 @@ class MainWindow(QMainWindow, mainUi):
             if msgList[1] == 'Send':
                 print('receive message: ' + msgList[2])
                 self.tb_chat.append(msgList[2])
-        elif msgList[0] == 'FriendList':
-            if msgList[1] == 'Add':
-                print('add friendlist: ' + msgList[2])
+        elif msgList[0] == 'Login':
+            if msgList[1] == 'Success':
+                print('login success: ' + msgList[2])
+                mainWindow.show()
+                self.close()
+            elif msgList[1] == 'Error':
+                print('login error: ' + msgList[2])
+                QMessageBox.error(self, 'error', msgList[2])
 
 class recvThread(QThread):
     def __init__(self, parent):
@@ -81,20 +86,11 @@ class LoginWindow(QMainWindow, loginUi):
         mainWindow.connect()
 
     def login(self):
-        if self.le_id.text() == 'exon' and self.le_pw.text() == 'exon':
-            if self.conFlag:
-                print('login: ' + self.le_id.text())
-                self.client_socket.send(('FriendList/Add/' + self.le_id.text()).encode())
-            else:
-                QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
-            mainWindow.show()
+        if self.conFlag:
+            print('login: ' + self.le_id.text())
+            self.client_socket.send(('Login/' + self.le_id.text() + '/' + self.le_pw.text()).encode())
         else:
-            if self.le_id.text() != 'exon':
-                QMessageBox.information(self, 'infomation', '해당하는 아이디가 존재하지 않습니다.')
-            elif self.le_pw.text() != 'exon':
-                QMessageBox.information(self, 'infomation', '비밀번호가 올바르지 않습니다.')
-            return
-        self.close()
+            QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
