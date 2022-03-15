@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
-    <height>700</height>
+    <width>476</width>
+    <height>683</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,34 +40,12 @@ color: #ffffff;
 </string>
    </property>
   </widget>
-  <widget class="QTextBrowser" name="tb_friendList">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>30</y>
-     <width>81</width>
-     <height>591</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>에스코어 드림 5 Medium</family>
-     <pointsize>11</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">backgorund-color: #ffffff;
-border-radius: 20px;
-color: #ffffff;
-</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btn_send">
    <property name="geometry">
     <rect>
      <x>330</x>
      <y>640</y>
-     <width>101</width>
+     <width>131</width>
      <height>31</height>
     </rect>
    </property>
@@ -119,7 +97,7 @@ background-color: rgb(233, 233, 233);</string>
     <rect>
      <x>340</x>
      <y>20</y>
-     <width>71</width>
+     <width>101</width>
      <height>21</height>
     </rect>
    </property>
@@ -137,6 +115,34 @@ background-color: rgb(233, 233, 233);</string>
    <property name="text">
     <string>Friend List</string>
    </property>
+  </widget>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>40</y>
+     <width>131</width>
+     <height>591</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">backgorund-color: #ffffff;
+color: #ffffff;
+</string>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>129</width>
+      <height>589</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -20,8 +20,8 @@ def threaded(clientSocket, addr):
             elif msgList[0] == 'Login':
                 if msgList[1] == 'exon':
                     if msgList[2] == 'exon':
-                        print('add friendlist: ' + msgList[2])
-                        clientList.append((clientSocket, msgList[2]))
+                        print('add friendlist: ' + msgList[1])
+                        clientList.append((clientSocket, msgList[1]))
                         print(clientList)
                         clientSocket.send('Login/Success'.encode())
                     else:
