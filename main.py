@@ -15,24 +15,28 @@ class MainWindow(QMainWindow, mainUi):
         self.btn_send.clicked.connect(self.send)
         self.le_chat.returnPressed.connect(self.send)
 
+        self.id = ''
+
         self.HOST = '127.0.0.1'
         self.PORT = 6666
         ## global value init
         self.conFlag = False
 
-        friendList = []
-        cnt = 1
+        self.friendList = []
+
+    def makeFriendList(self):
+        print('making friendList')
+        btnList = []
         mygroupbox = QtWidgets.QGroupBox()
         myform = QtWidgets.QFormLayout()
-        for i in range(100) :
+        for i in range(100):
             qBtn = QPushButton(self)
-            qBtn.setGeometry(340, 60 * cnt, 111, 28)
+            qBtn.setGeometry(340, 60 * (i + 1), 111, 28)
             qBtn.setStyleSheet('background-color: rgba(255, 255, 255, 0); color: rgb(255, 255, 255)')
-            qBtn.setText(str(i))
+            qBtn.setText(self.friendList[i][1])
             qBtn.show()
             myform.addRow(qBtn)
-            cnt = cnt+1
-            friendList.append(qBtn)
+            btnList.append(qBtn)
 
         mygroupbox.setLayout(myform)
         self.scrollArea.setWidget(mygroupbox)
@@ -41,7 +45,11 @@ class MainWindow(QMainWindow, mainUi):
         self.login.close()
         self.show()
         ## 친구목록을 서버에 요청
+        self.clientSocket.send('FriendList/Get'.encode())
+        print('FriendList/Get')
 
+    def idHandle(self, id):
+        self.id = id
 
     def loginHandle(self, login):
         self.login = login
@@ -49,7 +57,7 @@ class MainWindow(QMainWindow, mainUi):
 
     def socketInit(self):
         print('socket init!')
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self):
         if self.conFlag:
@@ -57,7 +65,7 @@ class MainWindow(QMainWindow, mainUi):
             return
 
         try:
-            self.client_socket.connect((self.HOST, self.PORT))
+            self.clientSocket.connect((self.HOST, self.PORT))
         except socket.error as msg:
             print("socket Error =: %s\n terminating program" % msg )
             QMessageBox.information(self, "infomation", "서버와의 연결을 확인하세요..")
@@ -70,33 +78,42 @@ class MainWindow(QMainWindow, mainUi):
         self.recvThread.sigShowMain.connect(self.changeDisplay)
         self.recvThread.sigPayload.connect(self.payloadParsing)
 
-    def payloadParsing(self,payload,data):
-        if payload == 'Friend' :
-            pass
-        pass
-    def send(self,msg):
+    def payloadParsing(self, payload, msgList):
+        if payload == 'FriendList':
+            if msgList[1] == 'Receive':
+                print('FriendList/Receive')
+                print('receive: ' + ''.join(msgList))
+                self.friendList = list(msgList[2])
+                self.makeFriendList()
+
+    def send(self, msg):
         if self.conFlag:
             print('send message: ' + msg)
             sendMsg = 'Chat/Send/' + msg
             print(sendMsg)
-            self.client_socket.send(sendMsg.encode())
+            self.clientSocket.send(sendMsg.encode())
         else:
             QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
 
     def send(self):
         if self.conFlag:
+            if not self.le_chat.text():
+                QMessageBox.information(self, 'infomation', '빈 메세지입니다.')
+                return
             print('send message: ' + self.le_chat.text())
-            sendMsg = 'Chat/Send/' + self.le_chat.text()
-            print(sendMsg)
-            self.client_socket.send(sendMsg.encode())
-            self.le_chat.setText('')
+            if len(self.le_chat.text().split('/')) <= 1:
+                sendMsg = 'Chat/Send/' + self.le_chat.text()
+                print(sendMsg)
+                self.clientSocket.send(sendMsg.encode())
+                self.le_chat.setText('')
         else:
             QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
 
 
-class recvThread(QThread,QObject):
+class recvThread(QThread, QObject):
     sigShowMain = pyqtSignal()
-    sigPayload = pyqtSignal(str,str)
+    sigPayload = pyqtSignal(str, str)
+
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -105,7 +122,7 @@ class recvThread(QThread,QObject):
 
     def run(self):
         while True:
-            msg = self.parent.client_socket.recv(1024).decode()
+            msg = self.parent.clientSocket.recv(1024).decode()
             msgList = msg.split('/')
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':
@@ -115,13 +132,12 @@ class recvThread(QThread,QObject):
                 if msgList[1] == 'Success':
                     print('login success')
                     self.sigShowMain.emit()
-
                 elif msgList[1] == 'Error':
                     print('login error: ' + msgList[2])
-                    QMessageBox.error(self, 'error', msgList[2])
-            elif msgList[0] == 'Friend':
-                self.sigPayload.emit(msgList[0],msg)
-        pass
+                    QMessageBox.information(self, 'information', msgList[2])
+            elif msgList[0] == 'FriendList':
+                print('FriendList')
+                self.sigPayload.emit(msgList[0], msgList)
 
 class LoginWindow(QWidget, loginUi):
     def __init__(self, mainWindow):
@@ -135,15 +151,14 @@ class LoginWindow(QWidget, loginUi):
     def login(self):
         if self.parent.conFlag:
             print('login: ' + self.le_id.text())
-            self.parent.client_socket.send(('Login/' + self.le_id.text() + '/' + self.le_pw.text()).encode())
+            self.parent.clientSocket.send(('Login/' + self.le_id.text() + '/' + self.le_pw.text()).encode())
         else:
             QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
-    mainWindow.show()
-    # loginWindow = LoginWindow(mainWindow)
-    # mainWindow.loginHandle(loginWindow)
-    # loginWindow.show()
+    loginWindow = LoginWindow(mainWindow)
+    mainWindow.loginHandle(loginWindow)
+    loginWindow.show()
     app.exec_()

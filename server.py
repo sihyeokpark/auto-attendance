@@ -28,6 +28,10 @@ def threaded(clientSocket, addr):
                         clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
                 else:
                     clientSocket.send('Login/Error/아이디가 존재하지 않습니다.'.encode())
+            elif msgList[0] == 'FriendList':
+                if msgList[1] == 'Get':
+                    print('friendList get: ' + str(clientList))
+                    clientSocket.send(('FriendList/Receive/' + str(clientList)).encode())
 
     except ConnectionResetError as e:
         print('Disconnected by ' + addr[0], ':', addr[1])
