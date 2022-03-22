@@ -78,8 +78,9 @@ class MainWindow(QMainWindow, mainUi):
         self.recvThread.sigShowMain.connect(self.changeDisplay)
         self.recvThread.sigPayload.connect(self.payloadParsing)
 
-    def payloadParsing(self, payload, msgList):
+    def payloadParsing(self, payload, msg):
         print('pasloadParsing')
+        msgList = msg.split('/')
         if payload == 'FriendList':
             if msgList[1] == 'Receive':
                 print('FriendList/Receive')
@@ -138,7 +139,7 @@ class recvThread(QThread, QObject):
                     QMessageBox.information(self, 'information', msgList[2])
             elif msgList[0] == 'FriendList':
                 print('FriendList')
-                self.sigPayload.emit(msgList[0], msgList)
+                self.sigPayload.emit(msgList[0], msg)
 
 class LoginWindow(QWidget, loginUi):
     def __init__(self, mainWindow):

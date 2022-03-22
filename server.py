@@ -1,5 +1,6 @@
 import socket
 import threading
+import sqlite3
 
 clientList = []
 
@@ -9,6 +10,9 @@ def threaded(clientSocket, addr):
     global clientList
     print('Connected by :', addr[0], ':', addr[1])
     try:
+        conn = sqlite3.connect("user.db")
+        cur = conn.cursor()
+
         while True:
             data = clientSocket.recv(1024)
             print(data.decode())
@@ -18,8 +22,13 @@ def threaded(clientSocket, addr):
                     print('receive message: ' + msgList[2])
                     clientSocket.send(('Chat/Send/' + msgList[2]).encode())
             elif msgList[0] == 'Login':
-                if msgList[1] == 'exon':
-                    if msgList[2] == 'exon':
+                query = "SELECT * FROM user WHERE id='%s'" % msgList[1]
+                cur.execute(query)
+                result = []
+                for data in cur.fetchone():
+                    result.append(data)
+                if msgList[1] == result[0]:
+                    if msgList[2] == result[1]:
                         print('add friendlist: ' + msgList[1])
                         clientList.append((clientSocket, msgList[1]))
                         print(clientList)
@@ -31,7 +40,10 @@ def threaded(clientSocket, addr):
             elif msgList[0] == 'FriendList':
                 if msgList[1] == 'Get':
                     print('friendList get: ' + str(clientList))
-                    clientSocket.send(('FriendList/Receive/' + str(clientList)).encode())
+                    idList = []
+                    for i in clientList:
+                        idList.append(i[1])
+                    clientSocket.send(('FriendList/Receive/' + str(idList)).encode())
 
     except ConnectionResetError as e:
         print('Disconnected by ' + addr[0], ':', addr[1])
