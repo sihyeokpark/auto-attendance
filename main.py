@@ -79,6 +79,7 @@ class MainWindow(QMainWindow, mainUi):
         self.recvThread.sigPayload.connect(self.payloadParsing)
 
     def payloadParsing(self, payload, msgList):
+        print('pasloadParsing')
         if payload == 'FriendList':
             if msgList[1] == 'Receive':
                 print('FriendList/Receive')
