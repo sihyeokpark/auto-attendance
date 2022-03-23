@@ -136,7 +136,8 @@ class recvThread(QThread, QObject):
                     self.sigShowMain.emit()
                 elif msgList[1] == 'Error':
                     print('login error: ' + msgList[2])
-                    QMessageBox.information(self, 'information', msgList[2])
+                    # QMessageBox.information(self, 'information', msgList[2])
+                    # 에러남. 호출하는 게 main window 가 아니라서 그런가봄
             elif msgList[0] == 'FriendList':
                 print('FriendList')
                 self.sigPayload.emit(msgList[0], msg)

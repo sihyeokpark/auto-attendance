@@ -24,19 +24,21 @@ def threaded(clientSocket, addr):
             elif msgList[0] == 'Login':
                 query = "SELECT * FROM user WHERE id='%s'" % msgList[1]
                 cur.execute(query)
-                result = []
-                for data in cur.fetchone():
-                    result.append(data)
-                if msgList[1] == result[0]:
-                    if msgList[2] == result[1]:
+                fetch = cur.fetchone()
+                userId = ''
+                pwd = ''
+                if not fetch:
+                    clientSocket.send('Login/Error/아이디가 존재하지 않습니다.'.encode())
+                else:
+                    userId, pwd = cur.fetchone()
+                if msgList[1] == userId:
+                    if msgList[2] == pwd:
                         print('add friendlist: ' + msgList[1])
                         clientList.append((clientSocket, msgList[1]))
                         print(clientList)
                         clientSocket.send('Login/Success'.encode())
                     else:
                         clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
-                else:
-                    clientSocket.send('Login/Error/아이디가 존재하지 않습니다.'.encode())
             elif msgList[0] == 'FriendList':
                 if msgList[1] == 'Get':
                     print('friendList get: ' + str(clientList))
