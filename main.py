@@ -16,7 +16,7 @@ class MainWindow(QMainWindow, mainUi):
         self.le_chat.returnPressed.connect(self.send)
 
         self.id = ''
-
+        self.curBtnId = 'all'
         self.HOST = '127.0.0.1'
         self.PORT = 6666
         ## global value init
@@ -24,22 +24,43 @@ class MainWindow(QMainWindow, mainUi):
 
         self.friendList = []
 
+    # 친구 목록 생성
     def makeFriendList(self):
         print('making friendList')
+        print(self.friendList)
         btnList = []
         mygroupbox = QtWidgets.QGroupBox()
         myform = QtWidgets.QFormLayout()
-        for i in range(100):
+
+        qBtn = QPushButton(self)
+        qBtn.setGeometry(340, 60 , 111, 28)
+        qBtn.setStyleSheet('QPushButton{color: white;background-color: rgb(58, 134, 255);}')
+        qBtn.setText('all')
+        qBtn.show()
+        qBtn.clicked.connect(self.friendButtonEvent)
+        myform.addRow(qBtn)
+        btnList.append(qBtn)
+
+        for i in range(len(self.friendList)):
             qBtn = QPushButton(self)
-            qBtn.setGeometry(340, 60 * (i + 1), 111, 28)
-            qBtn.setStyleSheet('background-color: rgba(255, 255, 255, 0); color: rgb(255, 255, 255)')
-            qBtn.setText(self.friendList[i][1])
+            qBtn.setGeometry(340, 60 * (i + 1 + 1), 111, 28)
+            qBtn.setStyleSheet('QPushButton{color: white;background-color: rgb(58, 134, 255);}')
+            qBtn.setText(self.friendList[i])
             qBtn.show()
+            qBtn.clicked.connect(self.friendButtonEvent)
             myform.addRow(qBtn)
             btnList.append(qBtn)
 
         mygroupbox.setLayout(myform)
         self.scrollArea.setWidget(mygroupbox)
+
+    def friendButtonEvent(self):
+        print("Button Clik")
+        btn = self.sender()
+        print(btn.text())
+        self.curBtnId = btn.text()
+        self.lab_chatName.setText('대화 상대 : ' + self.curBtnId)
+
 
     def changeDisplay(self):
         self.login.close()
@@ -85,7 +106,8 @@ class MainWindow(QMainWindow, mainUi):
             if msgList[1] == 'Receive':
                 print('FriendList/Receive')
                 print('receive: ' + ''.join(msgList))
-                self.friendList = list(msgList[2])
+                self.friendList = msgList[2].replace(']', '').replace(' ', '').replace('[', '').replace('\'', '').split(',')
+                print(self.friendList)
                 self.makeFriendList()
 
     def send(self, msg):
@@ -97,6 +119,7 @@ class MainWindow(QMainWindow, mainUi):
         else:
             QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
 
+    # 채팅 엔터치거나 버튼 눌러서 보냈을 때
     def send(self):
         if self.conFlag:
             if not self.le_chat.text():
@@ -104,7 +127,7 @@ class MainWindow(QMainWindow, mainUi):
                 return
             print('send message: ' + self.le_chat.text())
             if len(self.le_chat.text().split('/')) <= 1:
-                sendMsg = 'Chat/Send/' + self.le_chat.text()
+                sendMsg = 'Chat/Send/'+ self.curBtnId + '/' + self.le_chat.text()
                 print(sendMsg)
                 self.clientSocket.send(sendMsg.encode())
                 self.le_chat.setText('')
@@ -129,7 +152,11 @@ class recvThread(QThread, QObject):
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':
                     print('receive message: ' + msgList[2])
-                    self.parent.tb_chat.append(msgList[2])
+                    if msgList[2].find('->') != -1:
+                        self.parent.tb_chat.append('<span style=\"color:#ff0000;\" >' + msgList[2] + '</span>')
+                    else:
+                        self.parent.tb_chat.append(msgList[2])
+
             elif msgList[0] == 'Login':
                 if msgList[1] == 'Success':
                     print('login success')

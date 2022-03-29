@@ -53,6 +53,8 @@ color: #ffffff;
     <font>
      <family>에스코어 드림 5 Medium</family>
      <pointsize>11</pointsize>
+     <underline>false</underline>
+     <strikeout>false</strikeout>
     </font>
    </property>
    <property name="styleSheet">
@@ -95,8 +97,8 @@ background-color: rgb(233, 233, 233);</string>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>20</y>
+     <x>330</x>
+     <y>60</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -120,9 +122,9 @@ background-color: rgb(233, 233, 233);</string>
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>40</y>
+     <y>80</y>
      <width>131</width>
-     <height>591</height>
+     <height>551</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -139,10 +141,32 @@ color: #ffffff;
       <x>0</x>
       <y>0</y>
       <width>129</width>
-      <height>589</height>
+      <height>549</height>
      </rect>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="lab_chatName">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>30</y>
+     <width>111</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 255, 255)</string>
+   </property>
+   <property name="text">
+    <string>대화상대 : all</string>
+   </property>
   </widget>
  </widget>
  <resources/>
