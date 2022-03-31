@@ -34,7 +34,7 @@ class MainWindow(QMainWindow, mainUi):
 
         qBtn = QPushButton(self)
         qBtn.setGeometry(340, 60 , 111, 28)
-        qBtn.setStyleSheet('QPushButton{color: white;background-color: rgb(58, 134, 255);}')
+        qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #ECEFF4;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
         qBtn.setText('all')
         qBtn.show()
         qBtn.clicked.connect(self.friendButtonEvent)
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow, mainUi):
         for i in range(len(self.friendList)):
             qBtn = QPushButton(self)
             qBtn.setGeometry(340, 60 * (i + 1 + 1), 111, 28)
-            qBtn.setStyleSheet('QPushButton{color: white;background-color: rgb(58, 134, 255);}')
+            qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #ECEFF4;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
             qBtn.setText(self.friendList[i])
             qBtn.show()
             qBtn.clicked.connect(self.friendButtonEvent)
