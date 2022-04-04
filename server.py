@@ -75,6 +75,10 @@ def threaded(clientSocket, addr):
                     for i in clientList:
                         idList.append(i[1])
                     clientSocket.send(('FriendList/Receive/' + str(idList)).encode())
+            elif msgList[0] == 'Signin':
+                query = 'INSERT INTO user VALUES (\'' + msgList[1] + '\',\'' + msgList[2] + '\')'
+                cur.execute(query)
+                conn.commit()
 
     except ConnectionResetError as e:
         print('Disconnected by ' + addr[0], ':', addr[1])

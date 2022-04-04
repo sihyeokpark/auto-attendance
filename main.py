@@ -34,7 +34,7 @@ class MainWindow(QMainWindow, mainUi):
 
         qBtn = QPushButton(self)
         qBtn.setGeometry(340, 60 , 111, 28)
-        qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #ECEFF4;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
+        qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #D8DEE9;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
         qBtn.setText('all')
         qBtn.show()
         qBtn.clicked.connect(self.friendButtonEvent)
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow, mainUi):
         for i in range(len(self.friendList)):
             qBtn = QPushButton(self)
             qBtn.setGeometry(340, 60 * (i + 1 + 1), 111, 28)
-            qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #ECEFF4;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
+            qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #D8DEE9;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
             qBtn.setText(self.friendList[i])
             qBtn.show()
             qBtn.clicked.connect(self.friendButtonEvent)
@@ -174,6 +174,7 @@ class LoginWindow(QWidget, loginUi):
         super().__init__()
         self.setupUi(self)
         self.btn_login.clicked.connect(self.login)
+        self.btn_signin.clicked.connect(self.signin)
         self.parent = mainWindow
         mainWindow.socketInit()
         mainWindow.connect()
@@ -184,6 +185,14 @@ class LoginWindow(QWidget, loginUi):
             self.parent.clientSocket.send(('Login/' + self.le_id.text() + '/' + self.le_pw.text()).encode())
         else:
             QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
+
+    def signin(self):
+        if self.parent.conFlag:
+            print('signin: ' + self.le_id.text())
+            self.parent.clientSocket.send(('Signin/' + self.le_id.text() + '/' + self.le_pw.text()).encode())
+        else:
+            QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
