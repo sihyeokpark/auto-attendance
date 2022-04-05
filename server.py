@@ -9,17 +9,17 @@ clientList = []
 def userIDRefresh():
     global clientList
 
-    while True :
+    while True:
         time.sleep(1)
-        try :
+        try:
             idList = []
             for i in clientList:
                 idList.append(i[1])
 
-            for client in clientList :
+            for client in clientList:
                 client[0].send(('FriendList/Receive/' + str(idList)).encode())
 
-        except :
+        except:
             print("userIDRefresh Thread Error!!")
             pass
 
@@ -40,12 +40,12 @@ def threaded(clientSocket, addr):
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':
                     print('receive message: ' + msgList[3])
-                    if msgList[2] == 'all' :
+                    if msgList[2] == 'all':
                         for client in clientList:
                             client[0].send(('Chat/Send/' + clientID + ': ' + msgList[3]).encode())
-                    else :
+                    else:
                         for client in clientList:
-                            if msgList[2] == client[1] :
+                            if msgList[2] == client[1]:
                                 client[0].send(('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
                         clientSocket.send(('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
             elif msgList[0] == 'Login':
@@ -87,7 +87,8 @@ def threaded(clientSocket, addr):
         # userId 제거
         clientList.remove((clientSocket, clientID))
 
-HOST = '127.0.0.1'
+#HOST = '127.0.0.1'
+HOST = '192.168.35.82'
 PORT = 6666
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

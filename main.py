@@ -15,19 +15,25 @@ class MainWindow(QMainWindow, mainUi):
         self.btn_send.clicked.connect(self.send)
         self.le_chat.returnPressed.connect(self.send)
 
+        self.logLevel = 1
+
         self.id = ''
         self.curBtnId = 'all'
-        self.HOST = '127.0.0.1'
+        self.HOST = '192.168.35.82'
         self.PORT = 6666
         ## global value init
         self.conFlag = False
 
         self.friendList = []
 
+    def log(self, msg, level=2):
+        if level < self.logLevel:
+            print('[Log] ' + msg)
+
     # 친구 목록 생성
     def makeFriendList(self):
-        print('making friendList')
-        print(self.friendList)
+        self.log('making friendList')
+        self.log(self.friendList)
         btnList = []
         mygroupbox = QtWidgets.QGroupBox()
         myform = QtWidgets.QFormLayout()
@@ -55,9 +61,9 @@ class MainWindow(QMainWindow, mainUi):
         self.scrollArea.setWidget(mygroupbox)
 
     def friendButtonEvent(self):
-        print("Button Clik")
+        self.log("Button Clik")
         btn = self.sender()
-        print(btn.text())
+        self.log(btn.text())
         self.curBtnId = btn.text()
         self.lab_chatName.setText('대화 상대 : ' + self.curBtnId)
 
@@ -67,7 +73,7 @@ class MainWindow(QMainWindow, mainUi):
         self.show()
         ## 친구목록을 서버에 요청
         self.clientSocket.send('FriendList/Get'.encode())
-        print('FriendList/Get')
+        self.log('FriendList/Get', 1)
 
     def idHandle(self, id):
         self.id = id
@@ -77,7 +83,7 @@ class MainWindow(QMainWindow, mainUi):
 
 
     def socketInit(self):
-        print('socket init!')
+        self.log('socket init!', 0)
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self):
@@ -88,11 +94,11 @@ class MainWindow(QMainWindow, mainUi):
         try:
             self.clientSocket.connect((self.HOST, self.PORT))
         except socket.error as msg:
-            print("socket Error =: %s\n terminating program" % msg )
+            self.log("socket Error =: %s\n terminating program" % msg, 0)
             QMessageBox.information(self, "infomation", "서버와의 연결을 확인하세요..")
             return
 
-        print('socket connect success!!')
+        self.log('socket connect success!!', 0)
         self.conFlag = True
         self.recvThread = recvThread(self)
         self.recvThread.start()
@@ -100,21 +106,21 @@ class MainWindow(QMainWindow, mainUi):
         self.recvThread.sigPayload.connect(self.payloadParsing)
 
     def payloadParsing(self, payload, msg):
-        print('pasloadParsing')
+        self.log('pasloadParsing', 1)
         msgList = msg.split('/')
         if payload == 'FriendList':
             if msgList[1] == 'Receive':
-                print('FriendList/Receive')
-                print('receive: ' + ''.join(msgList))
+                self.log('FriendList/Receive', 1)
+                self.log('receive: ' + ''.join(msgList), 1)
                 self.friendList = msgList[2].replace(']', '').replace(' ', '').replace('[', '').replace('\'', '').split(',')
-                print(self.friendList)
+                self.log(self.friendList, 2)
                 self.makeFriendList()
 
     def send(self, msg):
         if self.conFlag:
-            print('send message: ' + msg)
+            self.log('send message: ' + msg, 0)
             sendMsg = 'Chat/Send/' + msg
-            print(sendMsg)
+            self.log(sendMsg)
             self.clientSocket.send(sendMsg.encode())
         else:
             QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
@@ -125,10 +131,10 @@ class MainWindow(QMainWindow, mainUi):
             if not self.le_chat.text():
                 QMessageBox.information(self, 'infomation', '빈 메세지입니다.')
                 return
-            print('send message: ' + self.le_chat.text())
+            self.log('send message: ' + self.le_chat.text(), 0)
             if len(self.le_chat.text().split('/')) <= 1:
-                sendMsg = 'Chat/Send/'+ self.curBtnId + '/' + self.le_chat.text()
-                print(sendMsg)
+                sendMsg = 'Chat/Send/' + self.curBtnId + '/' + self.le_chat.text()
+                self.log(sendMsg)
                 self.clientSocket.send(sendMsg.encode())
                 self.le_chat.setText('')
         else:
@@ -143,7 +149,13 @@ class recvThread(QThread, QObject):
         super().__init__(parent)
         self.parent = parent
 
-        print('recvThread Start')
+        self.logLevel = 1
+
+        self.log('recvThread Start', 0)
+
+    def log(self, msg, level=2):
+        if level < self.logLevel:
+            print('[Log] ' + msg)
 
     def run(self):
         while True:
@@ -151,22 +163,22 @@ class recvThread(QThread, QObject):
             msgList = msg.split('/')
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':
-                    print('receive message: ' + msgList[2])
+                    self.log('receive message: ' + msgList[2])
                     if msgList[2].find('->') != -1:
                         self.parent.tb_chat.append('<span style=\"color:#ff0000;\" >' + msgList[2] + '</span>')
                     else:
-                        self.parent.tb_chat.append(msgList[2])
+                        self.parent.tb_chat.append('<span style=\"color:#000000;\" >' + msgList[2] + '</span>')
 
             elif msgList[0] == 'Login':
                 if msgList[1] == 'Success':
-                    print('login success')
+                    self.log('login success', 0)
                     self.sigShowMain.emit()
                 elif msgList[1] == 'Error':
-                    print('login error: ' + msgList[2])
+                    self.log('login error: ' + msgList[2], 0)
                     # QMessageBox.information(self, 'information', msgList[2])
                     # 에러남. 호출하는 게 main window 가 아니라서 그런가봄
             elif msgList[0] == 'FriendList':
-                print('FriendList')
+                self.log('FriendList')
                 self.sigPayload.emit(msgList[0], msg)
 
 class LoginWindow(QWidget, loginUi):
