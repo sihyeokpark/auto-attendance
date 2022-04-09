@@ -68,18 +68,19 @@ class MainWindow(QMainWindow, mainUi):
         self.lab_chatName.setText('대화 상대 : ' + self.curBtnId)
 
 
+    # 로그인 창 꺼지게
     def changeDisplay(self):
         self.login.close()
         self.show()
-        ## 친구목록을 서버에 요청
-        self.clientSocket.send('FriendList/Get'.encode())
-        self.log('FriendList/Get', 1)
 
     def idHandle(self, id):
         self.id = id
 
     def loginHandle(self, login):
         self.login = login
+
+    def showError(self, msg):
+        QMessageBox.information(self, 'information', msg)
 
 
     def socketInit(self):
@@ -175,8 +176,10 @@ class recvThread(QThread, QObject):
                     self.sigShowMain.emit()
                 elif msgList[1] == 'Error':
                     self.log('login error: ' + msgList[2], 0)
-                    # QMessageBox.information(self, 'information', msgList[2])
+                    # self.parent.showError(msgList[2])
                     # 에러남. 호출하는 게 main window 가 아니라서 그런가봄
+                    if msgList[2] == '이미 접속 중인 아이디입니다.':
+                        return
             elif msgList[0] == 'FriendList':
                 self.log('FriendList')
                 self.sigPayload.emit(msgList[0], msg)

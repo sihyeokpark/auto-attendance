@@ -59,13 +59,19 @@ def threaded(clientSocket, addr):
                     clientSocket.send('Login/Error/아이디가 존재하지 않습니다.'.encode())
                 else:
                     userId, pwd = fetch
+                isIdAlready = False
                 if msgList[1] == userId:
                     if msgList[2] == pwd:
-                        print('add friendlist: ' + msgList[1])
-                        clientList.append((clientSocket, msgList[1]))
-                        print(clientList)
-                        clientSocket.send('Login/Success'.encode())
-                        clientID = userId
+                        for client in clientList:
+                            if client[1] == msgList[1]:
+                                clientSocket.send('Login/Error/이미 접속 중인 아이디입니다.'.encode())
+                                isIdAlready = True
+                        if not isIdAlready:
+                            print('add friendlist: ' + msgList[1])
+                            clientList.append((clientSocket, msgList[1]))
+                            print(clientList)
+                            clientSocket.send('Login/Success'.encode())
+                            clientID = userId
                     else:
                         clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
             elif msgList[0] == 'FriendList':
