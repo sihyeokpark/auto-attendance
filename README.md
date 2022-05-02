@@ -1,2 +1,2 @@
 # Chatting
-코딩 과외 파이썬, PyQt5
+채팅 프로그램 파이썬, PyQt5
