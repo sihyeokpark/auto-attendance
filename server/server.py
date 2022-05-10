@@ -4,6 +4,9 @@ import sqlite3
 import time
 
 clientList = []
+#HOST = '127.0.0.1'
+HOST = '192.168.35.82'
+PORT = 6666
 
 # 깨지는 글자 
 def removeBreakText(data):
@@ -103,10 +106,6 @@ def threaded(clientSocket, addr):
         # List에서 빠진 Client의 ID를 제거...
         # userId 제거
         clientList.remove((clientSocket, clientID))
-
-#HOST = '127.0.0.1'
-HOST = '192.168.35.82'
-PORT = 6666
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
