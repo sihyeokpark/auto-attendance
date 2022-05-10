@@ -5,6 +5,17 @@ import time
 
 clientList = []
 
+# 깨지는 글자 
+def removeBreakText(data):
+    j = 0
+    msg = data.decode("utf-8")
+    for i in msg:
+        if 'a' <= i <= "z" or 'A' <= i <= 'Z':
+            break
+        j += 1
+    msg = msg[j:]
+    return msg
+
 # 설정된 시간 마다 접속된 Client의 user id를 refresh하는 Thread
 def userIDRefresh():
     global clientList
@@ -35,8 +46,8 @@ def threaded(clientSocket, addr):
 
         while True:
             data = clientSocket.recv(1024)
-            print(data.decode())
-            msgList = data.decode().split('/')
+            msg = removeBreakText(data)
+            msgList = msg.split('/')
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':
                     print('receive message: ' + msgList[3])
