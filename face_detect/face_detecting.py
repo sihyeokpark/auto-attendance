@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import dlib
+import math
 
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml' )
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -21,6 +22,24 @@ MOUTH_INNER_POINTS = list(range(61, 68))
     output = 얼굴 중요 68개의 포인트 에 그려진 점 + 이미지
 """
 
+"""
+    얼굴 데이터 만들기
+    standard = getDistance(landmarks[30], landmarks[26])
+        distanceArr = []
+        f = open("박시혁.txt", 'w')
+
+        for i in range(68):
+            distanceArr.append(getDistance(landmarks[30], landmarks[i]) / standard)
+            f.write(str(distanceArr[i]) + ',')
+        f.close()
+"""
+
+def getDistance(point1, point2):
+    x1 = point1.item(0)
+    y1 = point1.item(1)
+    x2 = point2.item(0)
+    y2 = point2.item(1)
+    return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
 
 def detect(gray, frame):
     # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
@@ -36,6 +55,23 @@ def detect(gray, frame):
         # 원하는 포인트들을 넣는다, 지금은 전부
         landmarks_display = landmarks[0:68]
         # 눈만 = landmarks_display = landmarks[RIGHT_EYE_POINTS, LEFT_EYE_POINTS]
+
+        standard = getDistance(landmarks[30], landmarks[26])
+        distanceArr = []
+        f = open("박시혁.txt", 'r')
+        values = list(map(float, f.readline().split(',')))
+        averagesArr = []
+        sum = 0
+        for i in range(68):
+            distanceArr.append(getDistance(landmarks[30], landmarks[i]) / standard)
+            if (distanceArr[i] + values[i]) / 2 != 0:
+                averagesArr.append(100 - (abs(distanceArr[i] - values[i]) / ((distanceArr[i] + values[i]) / 2) * 100))
+            else:
+                averagesArr.append(100)
+            sum += averagesArr[i]
+        f.close()
+        result = sum / 68
+        print(result)
 
         # 포인트 출력
         for idx, point in enumerate(landmarks_display):
