@@ -13,8 +13,8 @@ video_capture = cv2.VideoCapture(0)
 # https://face-recognition.readthedocs.io/en/latest/face_recognition.html
 
 # Load a sample picture and learn how to recognize it.
-test_img = face_recognition.load_image_file("sihyeok.jpg")
-test2_img = face_recognition.load_image_file("sihoo.jpg")
+test_img = face_recognition.load_image_file("../sihyeok.jpg")
+test2_img = face_recognition.load_image_file("../sihoo.jpg")
 test_face_encoding = face_recognition.face_encodings(test_img)[0]
 test2_face_encoding = face_recognition.face_encodings(test2_img)[0]
 
@@ -92,7 +92,7 @@ while True:
         cv2.rectangle(frame, (left, top), (right, bottom), (255, 0, 0), 1)
 
         # Draw a label with a name below the face
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255, 0, 0), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
