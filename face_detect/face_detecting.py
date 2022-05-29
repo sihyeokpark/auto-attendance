@@ -1,6 +1,7 @@
 import face_recognition
 import cv2
 import numpy as np
+import os
 
 # openCV 카메라를 오픈하는 api
 video_capture = cv2.VideoCapture(0)
@@ -13,21 +14,28 @@ video_capture = cv2.VideoCapture(0)
 # https://face-recognition.readthedocs.io/en/latest/face_recognition.html
 
 # Load a sample picture and learn how to recognize it.
-test_img = face_recognition.load_image_file("../sihyeok.jpg")
-test2_img = face_recognition.load_image_file("../sihoo.jpg")
-test_face_encoding = face_recognition.face_encodings(test_img)[0]
-test2_face_encoding = face_recognition.face_encodings(test2_img)[0]
+path = "./faces"
+file_list = os.listdir(path)
+
+imgList = []
+faceEncodingList = []
+faceNameList = []
+
+for file in file_list:
+    img = face_recognition.load_image_file(f"faces/{file}")
+    imgList.append(img)
+    print(file)
+    faceEncodingList.append(face_recognition.face_encodings(img)[0])
+    print(face_recognition.face_encodings(img))
+    faceNameList.append(file.split('_')[0])
 
 
 # Create arrays of known face encodings and their names
-known_face_encodings = [
-    test_face_encoding,
-    test2_face_encoding
-]
-known_face_names = [
-    "EXON",
-    "sihoo"
-]
+# known_face_encodings = faceEncodingList
+# known_face_names = faceNameList
+
+known_face_encodings = faceEncodingList
+known_face_names = faceNameList
 ########################################
 
 # Initialize some variables

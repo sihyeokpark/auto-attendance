@@ -40,7 +40,7 @@ class MainWindow(QMainWindow, mainUi):
         userGrade = self.sigle2coupleDigit(self.te_grade.toPlainText())
         userClass = self.sigle2coupleDigit(self.te_class.toPlainText())
         userNumber = self.sigle2coupleDigit(self.te_number.toPlainText())
-        cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.png",
+        cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg",
                     self.captureImage)  # 한국어는 안됨..
         self.close()
 
