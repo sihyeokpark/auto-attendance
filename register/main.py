@@ -31,17 +31,20 @@ class MainWindow(QMainWindow, mainUi):
 
     def sigle2coupleDigit(self, n):
         s = ''
-        if int(n) < 10:
-            s = '0' + n
-        return s
+        try:
+            if int(n) < 10:
+                s = '0' + n
+            return s
+        except:
+            pass
+
 
     def register(self):
-        userName = self.te_name.toPlainText()
-        userGrade = self.sigle2coupleDigit(self.te_grade.toPlainText())
-        userClass = self.sigle2coupleDigit(self.te_class.toPlainText())
-        userNumber = self.sigle2coupleDigit(self.te_number.toPlainText())
-        cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg",
-                    self.captureImage)  # 한국어는 안됨..
+        userName = self.leName.text()
+        userGrade = self.sigle2coupleDigit(self.leGrade.text())
+        userClass = self.sigle2coupleDigit(self.leClass.text())
+        userNumber = self.sigle2coupleDigit(self.leNumber.text())
+        cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg", self.captureImage)  # 한국어는 안됨..
         self.close()
 
     def faceImage(self, img):

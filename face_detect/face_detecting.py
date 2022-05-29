@@ -47,7 +47,7 @@ process_this_frame = True
 while True:
     # Grab a single frame of video
     ret, frame = video_capture.read()
-    if ret < 0 :
+    if ret < 0:
         print("카메라가 열리지 않았습니다 다시 한번 확인해 주세요.")
         pass
 
@@ -83,7 +83,6 @@ while True:
             face_names.append(name)
 
     process_this_frame = not process_this_frame
-
 
     # 인식이 된 최초의 시간을 버퍼에 저장한 후에 이름과 출석 시간을 보여준다..
     # 현재 시간을 알아오는 PYTHON

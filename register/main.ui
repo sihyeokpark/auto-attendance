@@ -6,21 +6,44 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>701</width>
-    <height>391</height>
+    <width>689</width>
+    <height>346</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>얼굴 등록하기</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #e4ecfa;</string>
   </property>
   <widget class="QPushButton" name="btn_picture">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>350</y>
-     <width>75</width>
-     <height>23</height>
+     <x>490</x>
+     <y>220</y>
+     <width>161</width>
+     <height>51</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>18</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	border: none;
+	background-color: #2f3545;
+	border-radius: 10px;
+	color: #ffffff;
+}
+QPushButton:hover {
+	background-color: #49526b;
+	color: #ffffff;
+}</string>
    </property>
    <property name="text">
     <string>사진 찍기</string>
@@ -35,6 +58,14 @@
      <height>291</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
    <property name="text">
     <string>picture</string>
    </property>
@@ -42,11 +73,19 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>510</x>
+     <x>500</x>
      <y>40</y>
      <width>56</width>
-     <height>12</height>
+     <height>21</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>이름</string>
@@ -55,11 +94,19 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>510</x>
+     <x>500</x>
      <y>80</y>
      <width>56</width>
-     <height>12</height>
+     <height>21</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>학년</string>
@@ -71,8 +118,16 @@
      <x>510</x>
      <y>120</y>
      <width>56</width>
-     <height>12</height>
+     <height>21</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>반</string>
@@ -84,70 +139,154 @@
      <x>510</x>
      <y>160</y>
      <width>56</width>
-     <height>12</height>
+     <height>21</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>번</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="te_name">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>30</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="te_grade">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>70</y>
-     <width>104</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="te_class">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>110</y>
-     <width>104</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="undoRedoEnabled">
-    <bool>true</bool>
-   </property>
-   <property name="acceptRichText">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="te_number">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>150</y>
-     <width>104</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btn_register">
    <property name="geometry">
     <rect>
-     <x>500</x>
-     <y>250</y>
-     <width>171</width>
-     <height>61</height>
+     <x>490</x>
+     <y>280</y>
+     <width>161</width>
+     <height>51</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>18</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	background-color: #275efe;
+	border-radius: 10px;
+	color: #ffffff;
+}
+QPushButton:hover {
+	background-color: #274fff;
+}</string>
    </property>
    <property name="text">
     <string>등록하기</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="leNumber">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>160</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #49526b;
+border-radius: 8px;
+color: #ffffff;
+padding-right: 3px;
+padding-left: 3px;
+padding-bottom: 1px;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="leGrade">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>80</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #49526b;
+border-radius: 8px;
+color: #ffffff;
+padding-right: 3px;
+padding-left: 3px;
+padding-bottom: 1px;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="leName">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>40</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #49526b;
+border-radius: 8px;
+color: #ffffff;
+padding-right: 3px;
+padding-left: 3px;
+padding-bottom: 1px;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="leClass">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>120</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #49526b;
+border-radius: 8px;
+color: #ffffff;
+padding-right: 3px;
+padding-left: 3px;
+padding-bottom: 1px;</string>
    </property>
   </widget>
  </widget>
