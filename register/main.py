@@ -1,7 +1,8 @@
 import sys
 import os
-import socket
+import numpy as np
 import cv2
+import dlib
 from PyQt5.QtCore import QByteArray, QIODevice
 from PyQt5.QtGui import QImage, QPixmap
 
@@ -25,9 +26,43 @@ class MainWindow(QMainWindow, mainUi):
         self.setupUi(self)
 
         self.captureImage = 0
+        self.isLandmark = False
 
         self.btn_picture.clicked.connect(self.picture)
         self.btn_register.clicked.connect(self.register)
+        self.rbLandmark.clicked.connect(self.setLandmark)
+
+        self.faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
+    def setLandmark(self):
+        if self.rbLandmark.isChecked():
+            self.isLandmark = True
+        elif not self.rbLandmark.isChecked():
+            self.isLandmark = False
+
+
+    def detect(self, gray, frame):
+        # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
+        faces = self.faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100),
+                                             flags=cv2.CASCADE_SCALE_IMAGE)
+
+        # 얼굴에서 랜드마크를 찾자
+        for (x, y, w, h) in faces:
+            # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
+            dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
+            # 랜드마크 포인트들 지정
+            landmarks = np.matrix([[p.x, p.y] for p in self.predictor(frame, dlib_rect).parts()])
+            # 원하는 포인트들을 넣는다, 지금은 전부
+            landmarks_display = landmarks[0:68]
+            # 눈만 = landmarks_display = landmarks[RIGHT_EYE_POINTS, LEFT_EYE_POINTS]
+
+            # 포인트 출력
+            for idx, point in enumerate(landmarks_display):
+                pos = (point[0, 0], point[0, 1])
+                cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
+
+        return frame
 
     def sigle2coupleDigit(self, n):
         s = ''
@@ -37,7 +72,6 @@ class MainWindow(QMainWindow, mainUi):
             return s
         except:
             pass
-
 
     def register(self):
         userName = self.leName.text()
@@ -71,15 +105,27 @@ class MainWindow(QMainWindow, mainUi):
         text = "Press the ESC key to take a picture."
         font = cv2.FONT_HERSHEY_SIMPLEX
         org = (10, 30)
+        orgImage = None
         while cv2.waitKey(33) < 0:
             ret, frame = capture.read()
             if not ret:
                 QMessageBox.warning(self, "Warning", "카메라가 인식되지 않았습니다.")
                 return
             orgImage = frame.copy()
-            cv2.putText(frame, text, org, font, 0.5, (0, 0, 255), 1)
 
-            cv2.imshow("VideoFrame", frame)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # 만들어준 얼굴 눈 찾기
+            canvas = None
+            if self.isLandmark:
+                # 그리고 이미지를 그레이스케일로 변환
+                canvas = self.detect(gray, frame)
+            else:
+                canvas = frame.copy()
+            # 찾은 이미지 보여주기
+
+            cv2.putText(canvas, text, org, font, 0.5, (0, 0, 255), 1)
+
+            cv2.imshow("VideoFrame", canvas)
 
         self.captureImage = orgImage.copy()
 

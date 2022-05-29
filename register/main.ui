@@ -74,7 +74,7 @@ QPushButton:hover {
    <property name="geometry">
     <rect>
      <x>500</x>
-     <y>40</y>
+     <y>20</y>
      <width>56</width>
      <height>21</height>
     </rect>
@@ -95,7 +95,7 @@ QPushButton:hover {
    <property name="geometry">
     <rect>
      <x>500</x>
-     <y>80</y>
+     <y>60</y>
      <width>56</width>
      <height>21</height>
     </rect>
@@ -116,7 +116,7 @@ QPushButton:hover {
    <property name="geometry">
     <rect>
      <x>510</x>
-     <y>120</y>
+     <y>100</y>
      <width>56</width>
      <height>21</height>
     </rect>
@@ -137,7 +137,7 @@ QPushButton:hover {
    <property name="geometry">
     <rect>
      <x>510</x>
-     <y>160</y>
+     <y>140</y>
      <width>56</width>
      <height>21</height>
     </rect>
@@ -189,7 +189,7 @@ QPushButton:hover {
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>160</y>
+     <y>140</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -215,7 +215,7 @@ padding-bottom: 1px;</string>
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>80</y>
+     <y>60</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -241,7 +241,7 @@ padding-bottom: 1px;</string>
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>40</y>
+     <y>20</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -267,7 +267,7 @@ padding-bottom: 1px;</string>
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>120</y>
+     <y>100</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -287,6 +287,27 @@ color: #ffffff;
 padding-right: 3px;
 padding-left: 3px;
 padding-bottom: 1px;</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="rbLandmark">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>190</y>
+     <width>161</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>랜드마크</string>
    </property>
   </widget>
  </widget>
