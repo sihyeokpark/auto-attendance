@@ -1,6 +1,8 @@
 import sys
 import socket
 
+import registerFace
+
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
@@ -12,6 +14,8 @@ class MainWindow(QMainWindow, mainUi):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("exon main")
+
         self.btn_send.clicked.connect(self.send)
         self.le_chat.returnPressed.connect(self.send)
 
@@ -19,7 +23,7 @@ class MainWindow(QMainWindow, mainUi):
 
         self.id = ''
         self.curBtnId = 'all'
-        self.HOST = '39.115.37.107'
+        self.HOST = '192.168.35.82'
         self.PORT = 6666
         ## global value init
         self.conFlag = False
@@ -39,8 +43,8 @@ class MainWindow(QMainWindow, mainUi):
         myform = QtWidgets.QFormLayout()
 
         qBtn = QPushButton(self)
-        qBtn.setGeometry(340, 60 , 111, 28)
-        qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #D8DEE9;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
+        qBtn.setGeometry(340, 60, 111, 48)
+        qBtn.setStyleSheet("QPushButton { border: none; background-color: #2f3545; border-radius: 10px; color: #ffffff; } QPushButton:hover { background-color: #49526b; color: #ffffff; }")
         qBtn.setText('all')
         qBtn.show()
         qBtn.clicked.connect(self.friendButtonEvent)
@@ -49,8 +53,8 @@ class MainWindow(QMainWindow, mainUi):
 
         for i in range(len(self.friendList)):
             qBtn = QPushButton(self)
-            qBtn.setGeometry(340, 60 * (i + 1 + 1), 111, 28)
-            qBtn.setStyleSheet('QPushButton{color: #4C566A;background-color: #D8DEE9;border: 2px solid #4C566A;border-radius: 5px;padding: 5px;margin:3px;}')
+            qBtn.setGeometry(340, 60 * (i + 1 + 1), 111, 48)
+            qBtn.setStyleSheet("QPushButton { border: none; background-color: #2f3545; border-radius: 10px; color: #ffffff; } QPushButton:hover { background-color: #49526b; color: #ffffff; }")
             qBtn.setText(self.friendList[i])
             qBtn.show()
             qBtn.clicked.connect(self.friendButtonEvent)
@@ -87,7 +91,7 @@ class MainWindow(QMainWindow, mainUi):
         self.log('socket init!', 0)
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    def connect(self):
+    def connecttoServer(self):
         if self.conFlag:
             QMessageBox.information(self, "infomation", "이미 서버와 연결이 되었습니다..")
             return
@@ -190,9 +194,18 @@ class LoginWindow(QWidget, loginUi):
         self.setupUi(self)
         self.btn_login.clicked.connect(self.login)
         self.btn_signin.clicked.connect(self.signin)
+        self.btn_registerFace.clicked.connect(self.registerFaceCall)
+        self.setWindowTitle("exon login")
         self.parent = mainWindow
         mainWindow.socketInit()
-        mainWindow.connect()
+        mainWindow.connecttoServer()
+
+    def registerFaceCall(self):
+        self.hide()
+        self.registerWindow = registerFace.registerFaceWindow()
+        self.registerWindow.exec()
+        self.show()
+        print("------------------------------keep alive")
 
     def login(self):
         if self.parent.conFlag:

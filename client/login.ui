@@ -6,44 +6,97 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>231</width>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #e4ecfa;</string>
+  </property>
   <widget class="QLineEdit" name="le_id">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>50</y>
-     <width>113</width>
-     <height>20</height>
+     <x>20</x>
+     <y>29</y>
+     <width>191</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #49526b;
+border-radius: 8px;
+color: #ffffff;
+padding-right: 3px;
+padding-left: 3px;
+padding-bottom: 1px;</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="le_pw">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>80</y>
-     <width>113</width>
-     <height>20</height>
+     <x>20</x>
+     <y>70</y>
+     <width>191</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #49526b;
+border-radius: 8px;
+color: #ffffff;
+padding-right: 3px;
+padding-left: 3px;
+padding-bottom: 1px;</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_login">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>20</x>
      <y>110</y>
-     <width>75</width>
-     <height>23</height>
+     <width>81</width>
+     <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	background-color: #275efe;
+	border-radius: 10px;
+	color: #ffffff;
+}
+QPushButton:hover {
+	background-color: #274fff;
+}</string>
+   </property>
    <property name="text">
-    <string>login</string>
+    <string>Login</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_signin">
@@ -51,12 +104,65 @@
     <rect>
      <x>110</x>
      <y>110</y>
-     <width>75</width>
-     <height>23</height>
+     <width>101</width>
+     <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	border: none;
+	background-color: #2f3545;
+	border-radius: 10px;
+	color: #ffffff;
+}
+QPushButton:hover {
+	background-color: #49526b;
+	color: #ffffff;
+}</string>
+   </property>
    <property name="text">
-    <string>signin</string>
+    <string>Sign in</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_registerFace">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>160</y>
+     <width>191</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>18</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	border: none;
+	background-color: #2f3545;
+	border-radius: 10px;
+	color: #ffffff;
+}
+QPushButton:hover {
+	background-color: #49526b;
+	color: #ffffff;
+}</string>
+   </property>
+   <property name="text">
+    <string>얼굴 등록</string>
    </property>
   </widget>
  </widget>

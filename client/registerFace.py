@@ -17,16 +17,19 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-mainUi = uic.loadUiType("main.ui")[0]
+mainUi = uic.loadUiType("registerFace.ui")[0]
 
 
-class MainWindow(QMainWindow, mainUi):
+class registerFaceWindow(QDialog, mainUi):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("exon register face")
 
-        self.captureImage = 0
+        self.captureImage = None
+        self.captureFlag = False
         self.isLandmark = False
+        self.closeFlag = False
 
         self.btn_picture.clicked.connect(self.picture)
         self.btn_register.clicked.connect(self.register)
@@ -34,7 +37,7 @@ class MainWindow(QMainWindow, mainUi):
 
         self.faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-
+        self.show()
     def setLandmark(self):
         if self.rbLandmark.isChecked():
             self.isLandmark = True
@@ -72,14 +75,46 @@ class MainWindow(QMainWindow, mainUi):
             return s
         except:
             pass
+    def reject(self):
+        if self.closeFlag :
+            super().reject()
+        else :
+            print("just reject")
 
     def register(self):
         userName = self.leName.text()
         userGrade = self.sigle2coupleDigit(self.leGrade.text())
         userClass = self.sigle2coupleDigit(self.leClass.text())
         userNumber = self.sigle2coupleDigit(self.leNumber.text())
-        cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg", self.captureImage)  # 한국어는 안됨..
+        # 입력이 되지 않았으면 리턴... 다시 입력하게끔 유도...
+
+        # if not self.captureFlag :
+        #     QMessageBox.information(self, 'infomation', '얼굴 사진을 찍어 주세요..')
+        # elif (userName == None) or (userGrade == None) or (userClass == None) or (userNumber == None):
+        #     QMessageBox.information(self, 'infomation', '인적사항을 적어주세요.')
+        # else:
+
+        fileName = (f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg")
+        self.imwrite(fileName,self.captureImage)
+        #cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg", self.captureImage)  # 한국어는 안됨..
+        QMessageBox.information(self, 'infomation', '얼굴 등록이 성공 하였습니다..')
+        self.closeFlag = True
         self.close()
+
+    def imwrite(self,filename, img, params=None):
+        try:
+            ext = os.path.splitext(filename)[1]
+            result, n = cv2.imencode(ext, img, params)
+
+            if result:
+                with open(filename, mode='w+b') as f:
+                    n.tofile(f)
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(e)
+            return False
 
     def faceImage(self, img):
         # cv2.imshow("aa",img)
@@ -128,6 +163,7 @@ class MainWindow(QMainWindow, mainUi):
             cv2.imshow("VideoFrame", canvas)
 
         self.captureImage = orgImage.copy()
+        self.captureFlag = True
 
         capture.release()
         cv2.destroyAllWindows()
@@ -136,8 +172,8 @@ class MainWindow(QMainWindow, mainUi):
         self.lab_picture.setPixmap(pixmap)  # label의 영역에 사진 표시
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    mainWindow = MainWindow()
-    mainWindow.show()
-    app.exec_()
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     mainWindow = registerFaceWindow()
+#     mainWindow.show()
+#     app.exec_()

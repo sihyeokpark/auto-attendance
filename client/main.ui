@@ -14,7 +14,7 @@
    <string>Chatting</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #ECEFF4;</string>
+   <string notr="true">background-color: #e4ecfa;</string>
   </property>
   <widget class="QTextBrowser" name="tb_chat">
    <property name="geometry">
@@ -22,7 +22,7 @@
      <x>20</x>
      <y>20</y>
      <width>301</width>
-     <height>611</height>
+     <height>601</height>
     </rect>
    </property>
    <property name="font">
@@ -42,26 +42,29 @@
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>640</y>
+     <y>630</y>
      <width>131</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>에스코어 드림 5 Medium</family>
-     <pointsize>11</pointsize>
+     <family>Noto Sans KR</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
      <underline>false</underline>
      <strikeout>false</strikeout>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">QPushButton{
-	color: #2E3440;
-	background-color: white;
-	border: 2px solid #2E3440;
-	border-radius: 5px;
-	font-weight: semibold;
+    <string notr="true">QPushButton {
+	background-color: #275efe;
+	border-radius: 10px;
+	color: #ffffff;
+}
+QPushButton:hover {
+	background-color: #274fff;
 }</string>
    </property>
    <property name="text">
@@ -72,9 +75,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>640</y>
+     <y>630</y>
      <width>301</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -84,11 +87,12 @@
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">border: 0;
-border-radius: 15px;
-outline: none;
-padding-left: 10px;
-background-color: #D8DEE9;</string>
+    <string notr="true">background-color: #49526b;
+border-radius: 8px;
+color: #ffffff;
+padding-right: 3px;
+padding-left: 3px;
+padding-bottom: 1px;</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -102,10 +106,10 @@ background-color: #D8DEE9;</string>
    </property>
    <property name="font">
     <font>
-     <family>에스코어 드림 5 Medium</family>
-     <pointsize>10</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
+     <family>Noto Sans KR</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
     </font>
    </property>
    <property name="styleSheet">
@@ -121,7 +125,7 @@ background-color: #D8DEE9;</string>
      <x>330</x>
      <y>80</y>
      <width>131</width>
-     <height>551</height>
+     <height>541</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -140,7 +144,7 @@ background-color: #D8DEE9;</string>
       <x>0</x>
       <y>0</y>
       <width>129</width>
-      <height>549</height>
+      <height>539</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -152,15 +156,17 @@ background-color: #D8DEE9;</string>
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>30</y>
+     <y>20</y>
      <width>111</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>Noto Sans KR</family>
      <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
     </font>
    </property>
    <property name="styleSheet">
