@@ -35,7 +35,6 @@ def userIDRefresh():
 
         except:
             print("userIDRefresh Thread Error!!")
-            pass
 
 # 쓰레드에서 실행되는 코드입니다.
 # 접속한 클라이언트마다 새로운 쓰레드가 생성되어 통신을 하게 됩니다.
@@ -63,31 +62,32 @@ def threaded(clientSocket, addr):
                                 client[0].send(('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
                         clientSocket.send(('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
             elif msgList[0] == 'Login':
-                query = "SELECT * FROM user WHERE id='%s'" % msgList[1]
-                cur.execute(query)
-                fetch = cur.fetchone()
-                userId = ''
-                pwd = ''
-                print(fetch)
-                if not fetch:
-                    clientSocket.send('Login/Error/아이디가 존재하지 않습니다.'.encode())
-                else:
-                    userId, pwd = fetch
-                isIdAlready = False
-                if msgList[1] == userId:
-                    if msgList[2] == pwd:
-                        for client in clientList:
-                            if client[1] == msgList[1]:
-                                clientSocket.send('Login/Error/이미 접속 중인 아이디입니다.'.encode())
-                                isIdAlready = True
-                        if not isIdAlready:
-                            print('add friendlist: ' + msgList[1])
-                            clientList.append((clientSocket, msgList[1]))
-                            print(clientList)
-                            clientSocket.send('Login/Success'.encode())
-                            clientID = userId
+                if msgList[1] != '' and msgList[2] != '':
+                    query = "SELECT * FROM user WHERE id='%s'" % msgList[1]
+                    cur.execute(query)
+                    fetch = cur.fetchone()
+                    userId = ''
+                    pwd = ''
+                    print(fetch)
+                    if not fetch:
+                        clientSocket.send('Login/Error/아이디가 존재하지 않습니다.'.encode())
                     else:
-                        clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
+                        userId, pwd = fetch
+                    isIdAlready = False
+                    if msgList[1] == userId:
+                        if msgList[2] == pwd:
+                            for client in clientList:
+                                if client[1] == msgList[1]:
+                                    clientSocket.send('Login/Error/이미 접속 중인 아이디입니다.'.encode())
+                                    isIdAlready = True
+                            if not isIdAlready:
+                                print('add friendlist: ' + msgList[1])
+                                clientList.append((clientSocket, msgList[1]))
+                                print(clientList)
+                                clientSocket.send('Login/Success'.encode())
+                                clientID = userId
+                        else:
+                            clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
             elif msgList[0] == 'FriendList':
                 if msgList[1] == 'Get':
                     print('friendList get: ' + str(clientList))
@@ -96,16 +96,18 @@ def threaded(clientSocket, addr):
                         idList.append(i[1])
                     clientSocket.send(('FriendList/Receive/' + str(idList)).encode())
             elif msgList[0] == 'Signin':
-                query = 'INSERT INTO user VALUES (\'' + msgList[1] + '\',\'' + msgList[2] + '\')'
-                cur.execute(query)
-                conn.commit()
+                if msgList[1] != '' and msgList[2] != '':
+                    query = 'INSERT INTO user VALUES (\'' + msgList[1] + '\',\'' + msgList[2] + '\')'
+                    cur.execute(query)
+                    conn.commit()
+                    print('signin: ' + msgList[1])
 
     except ConnectionResetError as e:
         print('Disconnected by ' + addr[0], ':', addr[1])
         clientSocket.close()
         # List에서 빠진 Client의 ID를 제거...
-        # userId 제거
-        clientList.remove((clientSocket, clientID))
+        if (clientSocket, clientID) in clientList:
+            clientList.remove((clientSocket, clientID))
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

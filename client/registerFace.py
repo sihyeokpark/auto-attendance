@@ -68,17 +68,18 @@ class registerFaceWindow(QDialog, mainUi):
         return frame
 
     def sigle2coupleDigit(self, n):
-        s = ''
+        s = n
         try:
             if int(n) < 10:
                 s = '0' + n
             return s
         except:
             pass
+
     def reject(self):
-        if self.closeFlag :
+        if self.closeFlag:
             super().reject()
-        else :
+        else:
             print("just reject")
 
     def register(self):
@@ -88,18 +89,17 @@ class registerFaceWindow(QDialog, mainUi):
         userNumber = self.sigle2coupleDigit(self.leNumber.text())
         # 입력이 되지 않았으면 리턴... 다시 입력하게끔 유도...
 
-        # if not self.captureFlag :
-        #     QMessageBox.information(self, 'infomation', '얼굴 사진을 찍어 주세요..')
-        # elif (userName == None) or (userGrade == None) or (userClass == None) or (userNumber == None):
-        #     QMessageBox.information(self, 'infomation', '인적사항을 적어주세요.')
-        # else:
-
-        fileName = (f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg")
-        self.imwrite(fileName,self.captureImage)
-        #cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg", self.captureImage)  # 한국어는 안됨..
-        QMessageBox.information(self, 'infomation', '얼굴 등록이 성공 하였습니다..')
-        self.closeFlag = True
-        self.close()
+        if not self.captureFlag :
+            QMessageBox.information(self, 'infomation', '얼굴 사진을 찍어 주세요..')
+        elif (userName == None) or (userGrade == None) or (userClass == None) or (userNumber == None):
+            QMessageBox.information(self, 'infomation', '인적사항을 적어주세요.')
+        else:
+            fileName = (f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg")
+            self.imwrite(fileName,self.captureImage)
+            #cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg", self.captureImage)  # 한국어는 안됨..
+            QMessageBox.information(self, 'infomation', '얼굴 등록이 성공 하였습니다..')
+            self.closeFlag = True
+            self.close()
 
     def imwrite(self,filename, img, params=None):
         try:
