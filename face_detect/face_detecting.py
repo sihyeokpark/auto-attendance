@@ -2,6 +2,7 @@ import face_recognition
 import cv2
 import numpy as np
 import os
+import time
 
 # openCV 카메라를 오픈하는 api
 video_capture = cv2.VideoCapture(0)
@@ -12,6 +13,9 @@ video_capture = cv2.VideoCapture(0)
 # 이 모델은 Labeled Faces in the Wild 기준으로 99.38%의 정확도를 가집니다.
 # How to use face_recognition API
 # https://face-recognition.readthedocs.io/en/latest/face_recognition.html
+
+# 이미지 학습(?) 시간 체크
+start_time = time.time()
 
 # Load a sample picture and learn how to recognize it.
 path = "./faces"
@@ -25,9 +29,14 @@ for file in file_list:
     img = face_recognition.load_image_file(f"faces/{file}")
     imgList.append(img)
     print(file)
-    faceEncodingList.append(face_recognition.face_encodings(img)[0])
-    print(face_recognition.face_encodings(img))
-    faceNameList.append(file.split('_')[0])
+    encoding = face_recognition.face_encodings((img))
+    if len(encoding) <= 0:
+        print(f'Error: {file}에서 얼굴을 인식하지 못했습니다.')
+    else:
+        faceEncodingList.append(encoding[0])
+        faceNameList.append(file.split('_')[0])
+
+print(time.time() - start_time)
 
 
 # Create arrays of known face encodings and their names
