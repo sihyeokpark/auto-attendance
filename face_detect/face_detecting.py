@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import os
 import time
+import datetime
 
 # openCV 카메라를 오픈하는 api
 video_capture = cv2.VideoCapture(0)
@@ -91,6 +92,7 @@ while True:
 
             face_names.append(name)
 
+
     process_this_frame = not process_this_frame
 
     # 인식이 된 최초의 시간을 버퍼에 저장한 후에 이름과 출석 시간을 보여준다..
@@ -98,6 +100,8 @@ while True:
 
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
+        now = time.localtime()
+        print(f"{time.strftime('%Y.%m.%d: %H:%M:%S', now)} - {face_names} 출석 완료.")
         # Scale back up face locations since the frame we detected in was scaled to 1/4 size
         top *= 4
         right *= 4
