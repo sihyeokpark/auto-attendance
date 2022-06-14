@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import os
 import time
-import datetime
+import csv
 
 # openCV 카메라를 오픈하는 api
 video_capture = cv2.VideoCapture(0)
@@ -25,17 +25,23 @@ file_list = os.listdir(path)
 imgList = []
 faceEncodingList = []
 faceNameList = []
+encoding = []
 
-for file in file_list:
-    img = face_recognition.load_image_file(f"faces/{file}")
-    imgList.append(img)
-    print(file)
-    encoding = face_recognition.face_encodings((img))
-    if len(encoding) <= 0:
-        print(f'Error: {file}에서 얼굴을 인식하지 못했습니다.')
-    else:
-        faceEncodingList.append(encoding[0])
-        faceNameList.append(file.split('_')[0])
+# 얼굴 배열 읽어오기
+openFile = './faces/face_detecting.csv'
+with open(openFile, 'r') as f:
+    rdr = csv.reader(f)
+    for i, line in enumerate(rdr):
+        nparr = np.array(line)
+        floatarr = nparr.astype(np.float)
+        faceEncodingList.append(floatarr)
+
+# 이름 배열 읽어오기
+openFile = './faces/face_detecting_name.csv'
+with open(openFile, 'r') as f:
+    rdr = csv.reader(f)
+    for i, line in enumerate(rdr):
+        faceNameList.append(''.join(line))
 
 print(time.time() - start_time)
 
