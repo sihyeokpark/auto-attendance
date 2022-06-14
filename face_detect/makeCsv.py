@@ -43,8 +43,10 @@ openFile = './faces/face_detecting_name.csv'
 with open(openFile, 'w+', newline='') as f:
     writer = csv.writer(f)
     for file in file_list:
-        writer.writerow(file.split('_')[0])
-        faceNameList.append(file.split('_')[0])
+        extension = file.split('.')[1]
+        if extension == 'jpg':
+            writer.writerow(file.split('_')[0])
+            faceNameList.append(file.split('_')[0])
 
 # 걸린 시간 측정
 print(time.time() - start_time)
