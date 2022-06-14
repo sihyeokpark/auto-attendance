@@ -33,7 +33,7 @@ with open(openFile, 'r') as f:
     rdr = csv.reader(f)
     for i, line in enumerate(rdr):
         nparr = np.array(line)
-        floatarr = nparr.astype(np.float)
+        floatarr = nparr.astype(np.float64)
         faceEncodingList.append(floatarr)
 
 # 이름 배열 읽어오기
