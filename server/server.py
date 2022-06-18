@@ -2,22 +2,11 @@ import socket
 import threading
 import sqlite3
 import time
+import utils
 
 clientList = []
-#HOST = '127.0.0.1'
 HOST = '192.168.35.82'
 PORT = 6666
-
-# 깨지는 글자 
-def removeBreakText(data):
-    j = 0
-    msg = data.decode("utf-8")
-    for i in msg:
-        if 'a' <= i <= "z" or 'A' <= i <= 'Z':
-            break
-        j += 1
-    msg = msg[j:]
-    return msg
 
 # 설정된 시간 마다 접속된 Client의 user id를 refresh하는 Thread
 def userIDRefresh():
@@ -48,7 +37,7 @@ def threaded(clientSocket, addr):
 
         while True:
             data = clientSocket.recv(1024)
-            msg = removeBreakText(data)
+            msg = utils.removeBreakText(data)
             msgList = msg.split('/')
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':

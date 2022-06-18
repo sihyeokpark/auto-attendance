@@ -1,11 +1,10 @@
 import sys
 import socket
-
-import registerFace
-
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
+
+import registerFace
 
 mainUi = uic.loadUiType("main.ui")[0]
 loginUi = uic.loadUiType("login.ui")[0]
@@ -19,13 +18,14 @@ class MainWindow(QMainWindow, mainUi):
         self.btn_send.clicked.connect(self.send)
         self.le_chat.returnPressed.connect(self.send)
 
+        ## 전역 변수 생성
         self.logLevel = 1
 
         self.id = ''
         self.curBtnId = 'all'
         self.HOST = '192.168.35.82'
         self.PORT = 6666
-        ## global value init
+
         self.conFlag = False
 
         self.friendList = []
@@ -34,35 +34,32 @@ class MainWindow(QMainWindow, mainUi):
         if level < self.logLevel:
             print('[Log] ' + msg)
 
+    def makeFriendButton(self, text, i):
+        qBtn = QPushButton(self)
+        qBtn.setGeometry(340, 60 * (i + 2), 111, 48)
+        qBtn.setStyleSheet(
+            "QPushButton { border: none; height: 30px; background-color: #2f3545; border-radius: 10px; color: #ffffff; } QPushButton:hover { background-color: #49526b; color: #ffffff; }")
+        qBtn.setText(text)
+        qBtn.show()
+        qBtn.clicked.connect(self.friendButtonEvent)
+        self.myform.addRow(qBtn)
+        self.btnList.append(qBtn)
+
     # 친구 목록 생성
     def makeFriendList(self):
         self.log('making friendList')
         self.log(self.friendList)
-        btnList = []
-        mygroupbox = QtWidgets.QGroupBox()
-        myform = QtWidgets.QFormLayout()
+        self.btnList = []
+        self.mygroupbox = QtWidgets.QGroupBox()
+        self.myform = QtWidgets.QFormLayout()
 
-        qBtn = QPushButton(self)
-        qBtn.setGeometry(340, 60, 111, 48)
-        qBtn.setStyleSheet("QPushButton { border: none; background-color: #2f3545; border-radius: 10px; color: #ffffff; } QPushButton:hover { background-color: #49526b; color: #ffffff; }")
-        qBtn.setText('all')
-        qBtn.show()
-        qBtn.clicked.connect(self.friendButtonEvent)
-        myform.addRow(qBtn)
-        btnList.append(qBtn)
+        self.makeFriendButton('all', 0)
 
-        for i in range(len(self.friendList)):
-            qBtn = QPushButton(self)
-            qBtn.setGeometry(340, 60 * (i + 1 + 1), 111, 48)
-            qBtn.setStyleSheet("QPushButton { border: none; background-color: #2f3545; border-radius: 10px; color: #ffffff; } QPushButton:hover { background-color: #49526b; color: #ffffff; }")
-            qBtn.setText(self.friendList[i])
-            qBtn.show()
-            qBtn.clicked.connect(self.friendButtonEvent)
-            myform.addRow(qBtn)
-            btnList.append(qBtn)
+        for i in range(1, len(self.friendList)+1):
+            self.makeFriendButton(self.friendList[i-1], i)
 
-        mygroupbox.setLayout(myform)
-        self.scrollArea.setWidget(mygroupbox)
+        self.mygroupbox.setLayout(self.myform)
+        self.scrollArea.setWidget(self.mygroupbox)
 
     def friendButtonEvent(self):
         self.log("Button Clik")
@@ -85,7 +82,6 @@ class MainWindow(QMainWindow, mainUi):
 
     def showError(self, msg):
         QMessageBox.information(self, 'information', msg)
-
 
     def socketInit(self):
         self.log('socket init!', 0)
@@ -205,7 +201,6 @@ class LoginWindow(QWidget, loginUi):
         self.registerWindow = registerFace.registerFaceWindow()
         self.registerWindow.exec()
         self.show()
-        print("------------------------------keep alive")
 
     def login(self):
         if self.parent.conFlag:

@@ -61,7 +61,6 @@ face_names = []
 process_this_frame = True
 
 while True:
-    # Grab a single frame of video
     ret, frame = video_capture.read()
     if ret < 0:
         print("카메라가 열리지 않았습니다 다시 한번 확인해 주세요.")
