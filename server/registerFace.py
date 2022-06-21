@@ -38,6 +38,7 @@ class registerFaceWindow(QDialog, mainUi):
         self.faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
         self.show()
+
     def setLandmark(self):
         if self.rbLandmark.isChecked():
             self.isLandmark = True

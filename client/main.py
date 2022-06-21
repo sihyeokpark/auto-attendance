@@ -4,8 +4,6 @@ from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 
-import registerFace
-
 mainUi = uic.loadUiType("main.ui")[0]
 loginUi = uic.loadUiType("login.ui")[0]
 
@@ -160,7 +158,8 @@ class recvThread(QThread, QObject):
 
     def run(self):
         while True:
-            msg = self.parent.clientSocket.recv(1024).decode()
+            text = self.parent.clientSocket.recv(1024)
+            msg = text.decode()
             msgList = msg.split('/')
             if msgList[0] == 'Chat':
                 if msgList[1] == 'Send':

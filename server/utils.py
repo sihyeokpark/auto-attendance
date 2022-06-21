@@ -6,3 +6,5 @@ def removeBreakText(data):
         i += 1
     msg = msg[i:]
     return msg
+
+print(removeBreakText('Fogin'.encode()))
