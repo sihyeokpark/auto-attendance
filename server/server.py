@@ -1,5 +1,4 @@
 import socket
-import threading
 import sqlite3
 import time
 import utils
@@ -32,18 +31,55 @@ class ServerWindow(QWidget, serverUi):
 
         print('server start')
 
-        self.makeThread()
+        makingThread = makeThread(self)
+        makingThread.start()
 
-    def makeThread(self):
+        showingConnectedUsers = showConnectedUsers(self)
+        showingConnectedUsers.start()
+
+    def addLog(self, text):
+        self.tb_log.append(text)
+
+    def addUser(self, text):
+        self.tb_user.append(text)
+
+    def clearUser(self):
+        self.tb_user.clear()
+
+class showConnectedUsers(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):
+        cnt = 0
+        while True:
+            #self.parent.clearUser()
+            #self.parent.tb_user.clear()
+            cnt = cnt +1
+            self.parent.tb_user.append("test")
+            if cnt == 4:
+                self.parent.tb_user.clear()
+            for _, user in self.parent.clientList:
+                self.parent.addUser(user)
+                #self.parent.clearUser()
+            time.sleep(1)
+
+class makeThread(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):
         while True:
             print('wait')
 
-            clientSocket, addr = self.serverSocket.accept()
+            clientSocket, addr = self.parent.serverSocket.accept()
             print('client accpet addr = ', addr)
             t = mainThread(self, clientSocket, addr)
             t.start()
 
-        serverSocket.close()
+        self.parent.serverSocket.close()
 
 # 설정된 시간 마다 접속된 Client의 user id를 refresh하는 Thread
 class userIDRefresh(QThread):
@@ -69,6 +105,7 @@ class userIDRefresh(QThread):
 class mainThread(QThread):
     def __init__(self, parent, clientSocket, addr):
         super().__init__(parent)
+        print("mainThread Thread self = ", parent)
         self.clientSocket = clientSocket
         self.addr = addr
         self.parent = parent
@@ -88,11 +125,12 @@ class mainThread(QThread):
                 if msgList[0] == 'Chat':
                     if msgList[1] == 'Send':
                         print('receive message: ' + msgList[3])
+                        self.parent.parent.addLog(f'채팅 - {msgList[1]}: {msgList[2]} {msgList[3]}')
                         if msgList[2] == 'all':
-                            for client in self.parent.clientList:
+                            for client in self.parent.parent.clientList:
                                 client[0].send(('Chat/Send/' + clientID + ': ' + msgList[3]).encode())
                         else:
-                            for client in self.parent.clientList:
+                            for client in self.parent.parent.clientList:
                                 if msgList[2] == client[1]:
                                     client[0].send(
                                         ('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
@@ -113,23 +151,24 @@ class mainThread(QThread):
                         isIdAlready = False
                         if msgList[1] == userId:
                             if msgList[2] == pwd:
-                                for client in self.parent.clientList:
+                                for client in self.parent.parent.clientList:
                                     if client[1] == msgList[1]:
                                         self.clientSocket.send('Login/Error/이미 접속 중인 아이디입니다.'.encode())
                                         isIdAlready = True
                                 if not isIdAlready:
                                     print('add friendlist: ' + msgList[1])
-                                    self.parent.clientList.append((self.clientSocket, msgList[1]))
-                                    print(self.parent.clientList)
+                                    self.parent.parent.clientList.append((self.clientSocket, msgList[1]))
+                                    print(self.parent.parent.clientList)
                                     self.clientSocket.send('Login/Success'.encode())
                                     clientID = userId
+                                    self.parent.parent.addLog(f'{userId} - 로그인')
                             else:
                                 self.clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
                 elif msgList[0] == 'FriendList':
                     if msgList[1] == 'Get':
-                        print('friendList get: ' + str(self.parent.clientList))
+                        print('friendList get: ' + str(self.parent.parent.clientList))
                         idList = []
-                        for i in self.parent.clientList:
+                        for i in self.parent.parent.clientList:
                             idList.append(i[1])
                         self.clientSocket.send(('FriendList/Receive/' + str(idList)).encode())
                 elif msgList[0] == 'Signin':
@@ -138,13 +177,15 @@ class mainThread(QThread):
                         cur.execute(query)
                         conn.commit()
                         print('signin: ' + msgList[1])
+                        self.parent.parent.addLog(f'{msgList[1]} - 회원가입')
 
         except ConnectionResetError as e:
             print('Disconnected by ' + self.addr[0], ':', self.addr[1])
             self.clientSocket.close()
             # List에서 빠진 Client의 ID를 제거...
-            if (self.clientSocket, clientID) in self.parent.clientList:
-                self.parent.clientList.remove((self.clientSocket, clientID))
+            if (self.clientSocket, clientID) in self.parent.parent.clientList:
+                self.parent.parent.clientList.remove((self.clientSocket, clientID))
+                self.parent.parent.addLog(f'{userId} - 로그아웃')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
