@@ -1,15 +1,38 @@
 import socket
 import sqlite3
 import time
+import datetime
 import utils
 import sys
 
 from PyQt5.QtCore import QThread
 
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 from PyQt5 import uic, QtGui
 
-serverUi = uic.loadUiType("server.ui")[0]
+serverUi = uic.loadUiType('server.ui')[0]
+scheduleUi = uic.loadUiType('schedule.ui')[0]
+
+class ScheduleWindow(QDialog, scheduleUi):
+    def __init__(self, modi=False, chatList=None):
+        super().__init__()
+        self.modi = modi
+        self.chatList = chatList
+        self.setupUi(self)
+        self.setWindowTitle('exon server')
+
+        for data in self.chatList:
+            self.cbWho.addItem(data[1])
+
+        #self.cbWho.currentIndexChanged.connect(self.onCbWhoChanged)
+        self.cbWho.activated[str].connect(self.onCbWhoChanged)
+
+
+    def onCbWhoChanged(self, value):
+        print(value)
+        self.teWho.setText(self.teWho.toPlainText() + value + ', ')
+
 
 class ServerWindow(QWidget, serverUi):
     def __init__(self):
@@ -26,6 +49,8 @@ class ServerWindow(QWidget, serverUi):
         self.serverSocket.bind((self.HOST, self.PORT))
         self.serverSocket.listen()
 
+        self.btnRegister.clicked.connect(self.registerSchedule)
+
         idRefreshThread = userIDRefresh(self)
         idRefreshThread.start()
 
@@ -35,35 +60,42 @@ class ServerWindow(QWidget, serverUi):
         makingThread.start()
 
         showingConnectedUsers = showConnectedUsers(self)
+        showingConnectedUsers.userClear.connect(self.clearUser)
+        showingConnectedUsers.userAdd.connect(self.addUser)
         showingConnectedUsers.start()
+
+    def registerSchedule(self):
+        scheduleWindow = ScheduleWindow(False, self.clientList)
+        scheduleWindow.exec_()
+
+
 
     def addLog(self, text):
         self.tb_log.append(text)
 
+    @pyqtSlot(str)
     def addUser(self, text):
         self.tb_user.append(text)
 
+    @pyqtSlot()
     def clearUser(self):
         self.tb_user.clear()
 
-class showConnectedUsers(QThread):
+class showConnectedUsers(QThread,QObject):
+    userClear = pyqtSignal()
+    userAdd = pyqtSignal(str)
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
 
     def run(self):
-        cnt = 0
         while True:
-            #self.parent.clearUser()
-            #self.parent.tb_user.clear()
-            cnt = cnt +1
-            self.parent.tb_user.append("test")
-            if cnt == 4:
-                self.parent.tb_user.clear()
+            self.userClear.emit()
             for _, user in self.parent.clientList:
-                self.parent.addUser(user)
-                #self.parent.clearUser()
+                #self.parent.addUser(user)
+                self.userAdd.emit(str(user))
             time.sleep(1)
+
 
 class makeThread(QThread):
     def __init__(self, parent):
@@ -110,6 +142,13 @@ class mainThread(QThread):
         self.addr = addr
         self.parent = parent
 
+    def makeTimeString(self,Message):
+        makeTime = ""
+        now = time.localtime()
+        makeTime = "%04d/%02d/%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
+
+        return "["+makeTime+"] " + Message
+
     def run(self):
         clientID = ''
         print('Connected by :', self.addr[0], ':', self.addr[1])
@@ -125,7 +164,12 @@ class mainThread(QThread):
                 if msgList[0] == 'Chat':
                     if msgList[1] == 'Send':
                         print('receive message: ' + msgList[3])
-                        self.parent.parent.addLog(f'채팅 - {msgList[1]}: {msgList[2]} {msgList[3]}')
+                        owner = ''
+                        for client in self.parent.parent.clientList:
+                            if client[0] == self.clientSocket:
+                                owner = client[1]
+                        log = self.makeTimeString(f'Chat: {owner} -> {msgList[2]}: {msgList[3]}')
+                        self.parent.parent.addLog(log)
                         if msgList[2] == 'all':
                             for client in self.parent.parent.clientList:
                                 client[0].send(('Chat/Send/' + clientID + ': ' + msgList[3]).encode())
@@ -161,7 +205,8 @@ class mainThread(QThread):
                                     print(self.parent.parent.clientList)
                                     self.clientSocket.send('Login/Success'.encode())
                                     clientID = userId
-                                    self.parent.parent.addLog(f'{userId} - 로그인')
+                                    msg = self.makeTimeString(f'Login: {userId}')
+                                    self.parent.parent.addLog(msg)
                             else:
                                 self.clientSocket.send('Login/Error/비밀번호가 맞지 않습니다.'.encode())
                 elif msgList[0] == 'FriendList':
@@ -177,7 +222,8 @@ class mainThread(QThread):
                         cur.execute(query)
                         conn.commit()
                         print('signin: ' + msgList[1])
-                        self.parent.parent.addLog(f'{msgList[1]} - 회원가입')
+                        log = self.makeTimeString(f'SignUp: {msgList[1]}')
+                        self.parent.parent.addLog(log)
 
         except ConnectionResetError as e:
             print('Disconnected by ' + self.addr[0], ':', self.addr[1])
@@ -185,7 +231,12 @@ class mainThread(QThread):
             # List에서 빠진 Client의 ID를 제거...
             if (self.clientSocket, clientID) in self.parent.parent.clientList:
                 self.parent.parent.clientList.remove((self.clientSocket, clientID))
-                self.parent.parent.addLog(f'{userId} - 로그아웃')
+                log = self.makeTimeString(f'Logout: {userId}')
+                self.parent.parent.addLog(log)
+
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
