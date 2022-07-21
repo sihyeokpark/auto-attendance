@@ -15,18 +15,40 @@ serverUi = uic.loadUiType('server.ui')[0]
 scheduleUi = uic.loadUiType('schedule.ui')[0]
 
 class ScheduleWindow(QDialog, scheduleUi):
-    def __init__(self, modi=False, chatList=None):
+    setSchedule = pyqtSignal(int, int, str)
+
+    def __init__(self, parent, modi=False, chatList=None):
         super().__init__()
+        self.parent = parent
         self.modi = modi
         self.chatList = chatList
         self.setupUi(self)
         self.setWindowTitle('exon server')
+
+
+        self.btnSave.clicked.connect(self.saveSchedule)
 
         for data in self.chatList:
             self.cbWho.addItem(data[1])
 
         #self.cbWho.currentIndexChanged.connect(self.onCbWhoChanged)
         self.cbWho.activated[str].connect(self.onCbWhoChanged)
+
+    def saveSchedule(self):
+        dateValue = self.teDate.toPlainText()
+        timeValue = self.teTime.toPlainText()
+        whoValue = self.teWho.toPlainText()
+        noticeValue = self.teNotice.toPlainText()
+
+        rowPosition = self.parent.twSchedule.rowCount()
+        self.parent.twSchedule.insertRow(rowPosition)
+
+        print(self.setSchedule)
+        self.setSchedule.emit(rowPosition, 0, str(rowPosition))
+        self.setSchedule.emit(rowPosition, 1, dateValue)
+        self.setSchedule.emit(rowPosition, 2, timeValue)
+        self.setSchedule.emit(rowPosition, 3, whoValue)
+        self.setSchedule.emit(rowPosition, 4, noticeValue)
 
 
     def onCbWhoChanged(self, value):
@@ -65,10 +87,9 @@ class ServerWindow(QWidget, serverUi):
         showingConnectedUsers.start()
 
     def registerSchedule(self):
-        scheduleWindow = ScheduleWindow(False, self.clientList)
+        scheduleWindow = ScheduleWindow(self, False, self.clientList)
+        scheduleWindow.setSchedule.connect(self.setItem)
         scheduleWindow.exec_()
-
-
 
     def addLog(self, text):
         self.tb_log.append(text)
@@ -81,9 +102,16 @@ class ServerWindow(QWidget, serverUi):
     def clearUser(self):
         self.tb_user.clear()
 
-class showConnectedUsers(QThread,QObject):
+    @pyqtSlot(int, int, str)
+    def setItem(row, column, text, self):
+        print('d')
+        self.twSchedule.setItem(row, column, QtGui.QTableWidgetItem(text))
+
+# 서버의 "접속 유저" 보여주는 클래스
+class showConnectedUsers(QThread, QObject):
     userClear = pyqtSignal()
     userAdd = pyqtSignal(str)
+
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -91,8 +119,7 @@ class showConnectedUsers(QThread,QObject):
     def run(self):
         while True:
             self.userClear.emit()
-            for _, user in self.parent.clientList:
-                #self.parent.addUser(user)
+            for (_, user) in self.parent.clientList:
                 self.userAdd.emit(str(user))
             time.sleep(1)
 
@@ -137,17 +164,16 @@ class userIDRefresh(QThread):
 class mainThread(QThread):
     def __init__(self, parent, clientSocket, addr):
         super().__init__(parent)
-        print("mainThread Thread self = ", parent)
+        print('mainThread Thread self = ', parent)
         self.clientSocket = clientSocket
         self.addr = addr
         self.parent = parent
 
     def makeTimeString(self,Message):
-        makeTime = ""
+        makeTime = ''
         now = time.localtime()
-        makeTime = "%04d/%02d/%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
-
-        return "["+makeTime+"] " + Message
+        makeTime = '%04d/%02d/%02d %02d:%02d:%02d' % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
+        return '['+makeTime+'] ' + Message
 
     def run(self):
         clientID = ''
@@ -233,10 +259,6 @@ class mainThread(QThread):
                 self.parent.parent.clientList.remove((self.clientSocket, clientID))
                 log = self.makeTimeString(f'Logout: {userId}')
                 self.parent.parent.addLog(log)
-
-
-
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

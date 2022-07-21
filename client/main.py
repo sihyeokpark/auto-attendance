@@ -176,7 +176,7 @@ class recvThread(QThread, QObject):
                 elif msgList[1] == 'Error':
                     self.log('login error: ' + msgList[2], 0)
                     # self.parent.showError(msgList[2])
-                    # 에러남. 호출하는 게 main window 가 아니라서 그런가봄
+                    # 에러남. 호출하는 게 main window 가 아니라서 그런가봄 (해결책은 Signal 이용하면 될듯)
                     if msgList[2] == '이미 접속 중인 아이디입니다.':
                         return
             elif msgList[0] == 'FriendList':
