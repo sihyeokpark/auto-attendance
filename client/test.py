@@ -12,7 +12,6 @@ class MyWindow(QMainWindow, form_class):
         #self.tb_user.append("test")
         for _ in range(100):
             self.tb_user.clear()
-        '''
         ## table widget Test Code
         self.tableWidget.setRowCount(3)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers) #편집을 못하게 옵션질.
@@ -30,7 +29,8 @@ class MyWindow(QMainWindow, form_class):
 
         for i in range(3):
             print(i, "%s" % self.tableWidget.item(i, 0).text())
-        '''
+
+        self.tableWidget.item(0, 0).setText('ㅎㅇㅎㅇ')
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     mywindow = MyWindow()

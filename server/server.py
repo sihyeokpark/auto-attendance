@@ -4,6 +4,7 @@ import time
 import datetime
 import utils
 import sys
+import schedule
 
 from PyQt5.QtCore import QThread
 
@@ -15,17 +16,24 @@ serverUi = uic.loadUiType('server.ui')[0]
 scheduleUi = uic.loadUiType('schedule.ui')[0]
 
 class ScheduleWindow(QDialog, scheduleUi):
-    setSchedule = pyqtSignal(int, int, str)
+    setSchedule = pyqtSignal(int, list, bool)
 
-    def __init__(self, parent, modi=False, chatList=None):
+    def __init__(self, parent, modi=False, chatList=None, itemList = None):
         super().__init__()
         self.parent = parent
         self.modi = modi
         self.chatList = chatList
+        self.itemList = itemList
         self.setupUi(self)
         self.setWindowTitle('exon server')
 
-
+        if self.modi: ## 수정모드
+            self.teDate.setText(itemList[1])
+            self.teTime.setText(itemList[2])
+            self.teWho.setText(itemList[3])
+            self.teNotice.setText(itemList[4])
+        else:
+            pass
         self.btnSave.clicked.connect(self.saveSchedule)
 
         for data in self.chatList:
@@ -41,14 +49,25 @@ class ScheduleWindow(QDialog, scheduleUi):
         noticeValue = self.teNotice.toPlainText()
 
         rowPosition = self.parent.twSchedule.rowCount()
-        self.parent.twSchedule.insertRow(rowPosition)
+        if self.modi:
+            rowPosition = int(self.itemList[0])
+        else:
+            self.parent.twSchedule.insertRow(rowPosition)
 
-        print(self.setSchedule)
-        self.setSchedule.emit(rowPosition, 0, str(rowPosition))
-        self.setSchedule.emit(rowPosition, 1, dateValue)
-        self.setSchedule.emit(rowPosition, 2, timeValue)
-        self.setSchedule.emit(rowPosition, 3, whoValue)
-        self.setSchedule.emit(rowPosition, 4, noticeValue)
+        itemList = [str(rowPosition), dateValue, timeValue, whoValue, noticeValue]
+        self.setSchedule.emit(rowPosition, itemList, self.modi)
+
+        # monday, tuesday, wednesday, thursday, friday, saturday, sunday
+        if dateValue == '월요일': schedule.every().monday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+        elif dateValue == '화요일': schedule.every().tuesday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+        elif dateValue == '수요일': schedule.every().wednesday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+        elif dateValue == '목요일': schedule.every().thursday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+        elif dateValue == '금요일': schedule.every().friday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+        elif dateValue == '토요일': schedule.every().saturday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+        elif dateValue == '일요일': schedule.every().sunday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+
+
+        self.close()
 
 
     def onCbWhoChanged(self, value):
@@ -72,6 +91,8 @@ class ServerWindow(QWidget, serverUi):
         self.serverSocket.listen()
 
         self.btnRegister.clicked.connect(self.registerSchedule)
+        self.btnModify.clicked.connect(self.modifySchedule)
+        self.btnDelete.clicked.connect(self.deleteSchedule)
 
         idRefreshThread = userIDRefresh(self)
         idRefreshThread.start()
@@ -86,8 +107,25 @@ class ServerWindow(QWidget, serverUi):
         showingConnectedUsers.userAdd.connect(self.addUser)
         showingConnectedUsers.start()
 
+        runSchedule = RunSchedule(self)
+        runSchedule.start()
+
+    def executeSchedule(self, text):
+        print(text)
+
+    def deleteSchedule(self):
+        x = self.twSchedule.selectedIndexes()
+        self.twSchedule.removeRow(x[0].row())
+
     def registerSchedule(self):
         scheduleWindow = ScheduleWindow(self, False, self.clientList)
+        scheduleWindow.setSchedule.connect(self.setItem)
+        scheduleWindow.exec_()
+
+    def modifySchedule(self):
+        x = self.twSchedule.selectedIndexes()
+        itemList = [self.twSchedule.item(x[0].row(), 0).text(), self.twSchedule.item(x[0].row(), 1).text(), self.twSchedule.item(x[0].row(), 2).text(), self.twSchedule.item(x[0].row(), 3).text(), self.twSchedule.item(x[0].row(), 4).text()]
+        scheduleWindow = ScheduleWindow(self, True, self.clientList, itemList)
         scheduleWindow.setSchedule.connect(self.setItem)
         scheduleWindow.exec_()
 
@@ -102,10 +140,24 @@ class ServerWindow(QWidget, serverUi):
     def clearUser(self):
         self.tb_user.clear()
 
-    @pyqtSlot(int, int, str)
-    def setItem(row, column, text, self):
-        print('d')
-        self.twSchedule.setItem(row, column, QtGui.QTableWidgetItem(text))
+    @pyqtSlot(int, list, bool)
+    def setItem(self, row, itemList, isModify):
+        if isModify:
+            for i in range(5):
+                 self.twSchedule.item(row, i).setText(itemList[i])
+        else:
+            for i in range(5):
+                 self.twSchedule.setItem(row, i, QTableWidgetItem(itemList[i]))
+
+class RunSchedule(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
 # 서버의 "접속 유저" 보여주는 클래스
 class showConnectedUsers(QThread, QObject):
