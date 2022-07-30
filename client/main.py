@@ -118,6 +118,9 @@ class MainWindow(QMainWindow, mainUi):
                 self.log('Schedule', 1)
                 print(msgList)
                 QMessageBox.information(self, 'infomation', msgList[2])
+        if payload == 'Login':
+            if msgList[1] == 'Error':
+                QMessageBox.information(self, 'error', msgList[2])
 
 
     def send(self, msg):
@@ -180,8 +183,7 @@ class recvThread(QThread, QObject):
                     self.sigShowMain.emit()
                 elif msgList[1] == 'Error':
                     self.log('login error: ' + msgList[2], 0)
-                    # self.parent.showError(msgList[2])
-                    # 에러남. 호출하는 게 main window 가 아니라서 그런가봄 (해결책은 Signal 이용하면 될듯)
+                    self.sigPayload.emit(msgList[0], msg)
                     if msgList[2] == '이미 접속 중인 아이디입니다.':
                         return
             elif msgList[0] == 'FriendList':
