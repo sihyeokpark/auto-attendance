@@ -9,22 +9,19 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtGui
 
-
 def resource_path(relative_path):
     print(relative_path)
     """ Get absolute path to resource, works for dev and for PyInstaller """
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
-
-mainUi = uic.loadUiType("registerFace.ui")[0]
-
+mainUi = uic.loadUiType('./registerFace.ui')[0]
 
 class registerFaceWindow(QDialog, mainUi):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowTitle("exon register face")
+        self.setWindowTitle('exon register face')
 
         self.captureImage = None
         self.captureFlag = False
@@ -36,7 +33,7 @@ class registerFaceWindow(QDialog, mainUi):
         self.rbLandmark.clicked.connect(self.setLandmark)
 
         self.faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        self.predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+        self.predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
         self.show()
 
     def setLandmark(self):
@@ -95,7 +92,7 @@ class registerFaceWindow(QDialog, mainUi):
         elif (userName == None) or (userGrade == None) or (userClass == None) or (userNumber == None):
             QMessageBox.information(self, 'infomation', '인적사항을 적어주세요.')
         else:
-            fileName = (f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg")
+            fileName = (f'../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg')
             self.imwrite(fileName,self.captureImage)
             #cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg", self.captureImage)  # 한국어는 안됨..
             QMessageBox.information(self, 'infomation', '얼굴 등록이 성공 하였습니다..')
@@ -127,25 +124,25 @@ class registerFaceWindow(QDialog, mainUi):
         return pixmap
 
     def picture(self):
-        self.FileOpen = ""
+        self.FileOpen = ''
         # capture = cv2.VideoCapture('sample.mp4')
         try:
             capture = cv2.VideoCapture(0)
         except:
-            QMessageBox.warning(self, "Warning", "카메라가 인식되지 않았습니다.")
+            QMessageBox.warning(self, 'Warning', '카메라가 인식되지 않았습니다.')
             return
 
         capture.set(cv2.CAP_PROP_FRAME_WIDTH, 241)
         capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 331)
 
-        text = "Press the ESC key to take a picture."
+        text = 'Press the ESC key to take a picture.'
         font = cv2.FONT_HERSHEY_SIMPLEX
         org = (10, 30)
         orgImage = None
         while cv2.waitKey(33) < 0:
             ret, frame = capture.read()
             if not ret:
-                QMessageBox.warning(self, "Warning", "카메라가 인식되지 않았습니다.")
+                QMessageBox.warning(self, 'Warning', '카메라가 인식되지 않았습니다.')
                 return
             orgImage = frame.copy()
 
@@ -161,7 +158,7 @@ class registerFaceWindow(QDialog, mainUi):
 
             cv2.putText(canvas, text, org, font, 0.5, (0, 0, 255), 1)
 
-            cv2.imshow("VideoFrame", canvas)
+            cv2.imshow('VideoFrame', canvas)
 
         self.captureImage = orgImage.copy()
         self.captureFlag = True

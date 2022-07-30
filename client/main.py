@@ -4,6 +4,8 @@ from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 
+import registerFace
+
 mainUi = uic.loadUiType("main.ui")[0]
 loginUi = uic.loadUiType("login.ui")[0]
 
