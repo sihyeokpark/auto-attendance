@@ -57,14 +57,15 @@ class ScheduleWindow(QDialog, scheduleUi):
         itemList = [str(rowPosition), dateValue, timeValue, whoValue, noticeValue]
         self.setSchedule.emit(rowPosition, itemList, self.modi)
 
+
         # monday, tuesday, wednesday, thursday, friday, saturday, sunday
-        if dateValue == '월요일': schedule.every().monday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
-        elif dateValue == '화요일': schedule.every().tuesday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
-        elif dateValue == '수요일': schedule.every().wednesday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
-        elif dateValue == '목요일': schedule.every().thursday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
-        elif dateValue == '금요일': schedule.every().friday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
-        elif dateValue == '토요일': schedule.every().saturday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
-        elif dateValue == '일요일': schedule.every().sunday.at(timeValue).do(self.parent.executeSchedule, noticeValue)
+        if dateValue == '월요일': schedule.every().monday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+        elif dateValue == '화요일': schedule.every().tuesday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+        elif dateValue == '수요일': schedule.every().wednesday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+        elif dateValue == '목요일': schedule.every().thursday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+        elif dateValue == '금요일': schedule.every().friday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+        elif dateValue == '토요일': schedule.every().saturday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+        elif dateValue == '일요일': schedule.every().sunday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
 
 
         self.close()
@@ -110,8 +111,13 @@ class ServerWindow(QWidget, serverUi):
         runSchedule = RunSchedule(self)
         runSchedule.start()
 
-    def executeSchedule(self, text):
-        print(text)
+    def executeSchedule(self, data):
+        whoList = data[0].split(',')[:-1]
+        for client in self.clientList:
+            if client[1] in whoList:
+                print('Schedule/Send/' + data[1])
+                client[0].send(('Schedule/Send/' + data[1]).encode())
+
 
     def deleteSchedule(self):
         x = self.twSchedule.selectedIndexes()

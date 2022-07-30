@@ -89,7 +89,6 @@ class MainWindow(QMainWindow, mainUi):
         if self.conFlag:
             QMessageBox.information(self, "infomation", "이미 서버와 연결이 되었습니다..")
             return
-
         try:
             self.clientSocket.connect((self.HOST, self.PORT))
         except socket.error as msg:
@@ -114,6 +113,12 @@ class MainWindow(QMainWindow, mainUi):
                 self.friendList = msgList[2].replace(']', '').replace(' ', '').replace('[', '').replace('\'', '').split(',')
                 self.log(self.friendList, 2)
                 self.makeFriendList()
+        if payload == 'Schedule':
+            if msgList[1] == 'Send':
+                self.log('Schedule', 1)
+                print(msgList)
+                QMessageBox.information(self, 'infomation', msgList[2])
+
 
     def send(self, msg):
         if self.conFlag:
@@ -182,6 +187,10 @@ class recvThread(QThread, QObject):
             elif msgList[0] == 'FriendList':
                 self.log('FriendList')
                 self.sigPayload.emit(msgList[0], msg)
+            elif msgList[0] == 'Schedule':
+                self.log('Schedule')
+                self.sigPayload.emit(msgList[0], msg)
+
 
 class LoginWindow(QWidget, loginUi):
     def __init__(self, mainWindow):
