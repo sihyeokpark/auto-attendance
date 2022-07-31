@@ -48,11 +48,18 @@ class ScheduleWindow(QDialog, scheduleUi):
         whoValue = self.teWho.toPlainText()
         noticeValue = self.teNotice.toPlainText()
 
+        con = sqlite3.connect('schedule.db')
+        cursor = con.cursor()
+
         rowPosition = self.parent.twSchedule.rowCount()
         if self.modi:
             rowPosition = int(self.itemList[0])
+            cursor.execute(f"UPDATE schedule SET Date = '{dateValue}', Time = '{timeValue}', Who = '{whoValue}', Notice = '{noticeValue}' WHERE id = {rowPosition}")
         else:
             self.parent.twSchedule.insertRow(rowPosition)
+            cursor.execute(f"INSERT INTO schedule VALUES({rowPosition}, '{dateValue}', '{timeValue}', '{whoValue}', '{noticeValue}')")
+        con.commit()
+        con.close()
 
         itemList = [str(rowPosition), dateValue, timeValue, whoValue, noticeValue]
         self.setSchedule.emit(rowPosition, itemList, self.modi)
@@ -66,6 +73,7 @@ class ScheduleWindow(QDialog, scheduleUi):
         elif dateValue == '금요일': schedule.every().friday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
         elif dateValue == '토요일': schedule.every().saturday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
         elif dateValue == '일요일': schedule.every().sunday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+
 
 
         self.close()
