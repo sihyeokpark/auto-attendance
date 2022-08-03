@@ -1,12 +1,9 @@
 import socket
 import sqlite3
 import time
-import datetime
-import utils
+import os
 import sys
 import schedule
-
-from PyQt5.QtCore import QThread
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -17,6 +14,7 @@ scheduleUi = uic.loadUiType('schedule.ui')[0]
 
 class ScheduleWindow(QDialog, scheduleUi):
     setSchedule = pyqtSignal(int, list, bool)
+    initSchedule = pyqtSignal()
 
     def __init__(self, parent, modi=False, chatList=None, itemList = None):
         super().__init__()
@@ -48,23 +46,25 @@ class ScheduleWindow(QDialog, scheduleUi):
         whoValue = self.teWho.toPlainText()
         noticeValue = self.teNotice.toPlainText()
 
-        con = sqlite3.connect('schedule.db')
-        cursor = con.cursor()
-
         rowPosition = self.parent.twSchedule.rowCount()
         if self.modi:
             rowPosition = int(self.itemList[0])
-            cursor.execute(f"UPDATE schedule SET Date = '{dateValue}', Time = '{timeValue}', Who = '{whoValue}', Notice = '{noticeValue}' WHERE id = {rowPosition}")
+            self.parent.cursor.execute(f"UPDATE schedule SET Date = '{dateValue}', Time = '{timeValue}', Who = '{whoValue}', Notice = '{noticeValue}' WHERE Id = {rowPosition}")
         else:
             self.parent.twSchedule.insertRow(rowPosition)
-            cursor.execute(f"INSERT INTO schedule VALUES({rowPosition}, '{dateValue}', '{timeValue}', '{whoValue}', '{noticeValue}')")
-        con.commit()
-        con.close()
+            id = 0
+            if rowPosition-1 >= 0:
+                id = int(self.parent.twSchedule.item(rowPosition-1, 0).text())+1
+            self.parent.cursor.execute(f"INSERT INTO schedule VALUES({str(id)}, '{dateValue}', '{timeValue}', '{whoValue}', '{noticeValue}')")
+        self.parent.con.commit()
 
         itemList = [str(rowPosition), dateValue, timeValue, whoValue, noticeValue]
         self.setSchedule.emit(rowPosition, itemList, self.modi)
 
-
+        # table widget 있는 모든 데이터를 항상 다시 등록 해야됨..
+        #이미 등록이 되어있을 경우 추가로 등록하면 안되는 현상 발견..
+        # schedule 의 cancel_job() 함수를 호출하여 기존 데이터를 종료 시키고
+        # 다시 등록..
         # monday, tuesday, wednesday, thursday, friday, saturday, sunday
         if dateValue == '월요일': schedule.every().monday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
         elif dateValue == '화요일': schedule.every().tuesday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
@@ -74,7 +74,7 @@ class ScheduleWindow(QDialog, scheduleUi):
         elif dateValue == '토요일': schedule.every().saturday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
         elif dateValue == '일요일': schedule.every().sunday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
 
-
+        self.initSchedule.emit()
 
         self.close()
 
@@ -93,6 +93,14 @@ class ServerWindow(QWidget, serverUi):
         self.clientList = []
         self.HOST = '192.168.35.82'
         self.PORT = 6666
+
+        self.dbFileName = 'schedule.db'
+        self.dbFlag = os.path.isfile(self.dbFileName)
+        self.con = sqlite3.connect('schedule.db')
+        self.cursor = self.con.cursor()
+        self.createDb()
+        self.initScheduleTable()
+
 
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -119,28 +127,62 @@ class ServerWindow(QWidget, serverUi):
         runSchedule = RunSchedule(self)
         runSchedule.start()
 
+    @pyqtSlot()
+    def initScheduleTable(self):
+        rows = self.selectAllDb()
+        self.twSchedule.setRowCount(0)
+        print(rows)
+        for i in range(len(rows)):
+            rowPosition = self.twSchedule.rowCount()
+            self.twSchedule.insertRow(rowPosition)
+            for j in range(len(rows[i])):
+                self.twSchedule.setItem(i, j, QTableWidgetItem(str(rows[i][j])))
+
+
+    def selectAllDb(self):
+        self.cursor.execute("SELECT * FROM schedule")
+        rows = self.cursor.fetchall()
+        self.con.commit()
+        return rows
+
+    def insertDb(value, self):
+        self.cursor.execute(f"INSERT INTO schedule VALUES ({str(value[0])}, '{value[1]}', '{value[2]}', '{value[3]}', '{value[4]}')")
+        self.con.commit()
+
+    def createDb(self):
+        if not self.dbFlag:
+            self.cursor.execute("CREATE TABLE schedule(Id int, Date text, Time text, Who text, Notice text)")
+            self.con.commit()
+            self.dbFlag = True
+
     def executeSchedule(self, data):
         whoList = data[0].split(',')[:-1]
         for client in self.clientList:
             if client[1] in whoList:
-                print('Schedule/Send/' + data[1])
-                client[0].send(('Schedule/Send/' + data[1]).encode())
+                # print('Schedule/Send/' + data[1])
+                # client[0].send(('Schedule/Send/' + data[1]).encode())
+                client[0].send((f'Chat/Send/{data[1]}').encode())
 
 
     def deleteSchedule(self):
         x = self.twSchedule.selectedIndexes()
+        print(self.twSchedule.item(x[0].row(), x[0].column()).text())
+        self.cursor.execute(f"DELETE FROM schedule WHERE Id={str(self.twSchedule.item(x[0].row(), x[0].column()).text())};")
+        self.con.commit()
         self.twSchedule.removeRow(x[0].row())
 
     def registerSchedule(self):
         scheduleWindow = ScheduleWindow(self, False, self.clientList)
         scheduleWindow.setSchedule.connect(self.setItem)
+        scheduleWindow.initSchedule.connect(self.initScheduleTable)
         scheduleWindow.exec_()
 
     def modifySchedule(self):
         x = self.twSchedule.selectedIndexes()
-        itemList = [self.twSchedule.item(x[0].row(), 0).text(), self.twSchedule.item(x[0].row(), 1).text(), self.twSchedule.item(x[0].row(), 2).text(), self.twSchedule.item(x[0].row(), 3).text(), self.twSchedule.item(x[0].row(), 4).text()]
+        itemList = [self.twSchedule.item(x[0].row(), 0).text(), self.twSchedule.item(x[0].row(), 1).text(), self.twSchedule.item(x[0].row(), 2).text(), self.twSchedule.item(x[0].row(), 3).text()]
         scheduleWindow = ScheduleWindow(self, True, self.clientList, itemList)
         scheduleWindow.setSchedule.connect(self.setItem)
+        scheduleWindow.initSchedule.connect(self.initScheduleTable)
         scheduleWindow.exec_()
 
     def addLog(self, text):
@@ -270,8 +312,7 @@ class mainThread(QThread):
                                 if msgList[2] == client[1]:
                                     client[0].send(
                                         ('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
-                            self.clientSocket.send(
-                                ('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
+                            self.clientSocket.send(('Chat/Send/' + clientID + ' -> ' + msgList[2] + ': ' + msgList[3]).encode())
                 elif msgList[0] == 'Login':
                     if msgList[1] != '' and msgList[2] != '':
                         query = "SELECT * FROM user WHERE id='%s'" % msgList[1]
