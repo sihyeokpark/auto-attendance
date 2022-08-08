@@ -66,13 +66,14 @@ class ScheduleWindow(QDialog, scheduleUi):
         # schedule 의 cancel_job() 함수를 호출하여 기존 데이터를 종료 시키고
         # 다시 등록..
         # monday, tuesday, wednesday, thursday, friday, saturday, sunday
-        if dateValue == '월요일': schedule.every().monday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
-        elif dateValue == '화요일': schedule.every().tuesday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
-        elif dateValue == '수요일': schedule.every().wednesday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
-        elif dateValue == '목요일': schedule.every().thursday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
-        elif dateValue == '금요일': schedule.every().friday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
-        elif dateValue == '토요일': schedule.every().saturday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
-        elif dateValue == '일요일': schedule.every().sunday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue))
+
+        if dateValue == '월요일': self.parent.schedules.append(schedule.every().monday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue)))
+        elif dateValue == '화요일': self.parent.schedules.append(schedule.every().tuesday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue)))
+        elif dateValue == '수요일': self.parent.schedules.append(schedule.every().wednesday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue)))
+        elif dateValue == '목요일': self.parent.schedules.append(schedule.every().thursday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue)))
+        elif dateValue == '금요일': self.parent.schedules.append(schedule.every().friday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue)))
+        elif dateValue == '토요일': self.parent.schedules.append(schedule.every().saturday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue)))
+        elif dateValue == '일요일': self.parent.schedules.append(schedule.every().sunday.at(timeValue).do(self.parent.executeSchedule, (whoValue, noticeValue)))
 
         self.initSchedule.emit()
 
@@ -98,6 +99,7 @@ class ServerWindow(QWidget, serverUi):
         self.dbFlag = os.path.isfile(self.dbFileName)
         self.con = sqlite3.connect('schedule.db')
         self.cursor = self.con.cursor()
+        self.schedules = []
         self.createDb()
         self.initScheduleTable()
 
@@ -131,8 +133,29 @@ class ServerWindow(QWidget, serverUi):
     def initScheduleTable(self):
         rows = self.selectAllDb()
         self.twSchedule.setRowCount(0)
-        print(rows)
         for i in range(len(rows)):
+            print()
+            if rows[i][1] == '월요일':
+                self.schedules.append(
+                    schedule.every().monday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))
+            elif rows[i][1] == '화요일':
+                self.schedules.append(
+                    schedule.every().tuesday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))
+            elif rows[i][1] == '수요일':
+                self.schedules.append(
+                    schedule.every().wednesday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))
+            elif rows[i][1] == '목요일':
+                self.schedules.append(
+                    schedule.every().thursday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))
+            elif rows[i][1] == '금요일':
+                self.schedules.append(
+                    schedule.every().friday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))
+            elif rows[i][1] == '토요일':
+                self.schedules.append(
+                    schedule.every().saturday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))
+            elif rows[i][1] == '일요일':
+                self.schedules.append(
+                    schedule.every().sunday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))
             rowPosition = self.twSchedule.rowCount()
             self.twSchedule.insertRow(rowPosition)
             for j in range(len(rows[i])):
@@ -161,15 +184,20 @@ class ServerWindow(QWidget, serverUi):
             if client[1] in whoList:
                 # print('Schedule/Send/' + data[1])
                 # client[0].send(('Schedule/Send/' + data[1]).encode())
-                client[0].send((f'Chat/Send/{data[1]}').encode())
+                client[0].send((f'Chat/Send/[스케줄] {data[1]}').encode())
 
 
     def deleteSchedule(self):
         x = self.twSchedule.selectedIndexes()
-        print(self.twSchedule.item(x[0].row(), x[0].column()).text())
-        self.cursor.execute(f"DELETE FROM schedule WHERE Id={str(self.twSchedule.item(x[0].row(), x[0].column()).text())};")
+        print(self.twSchedule.item(x[0].row(), 0).text())
+        self.cursor.execute(f"DELETE FROM schedule WHERE Id={str(self.twSchedule.item(x[0].row(), 0).text())};")
         self.con.commit()
         self.twSchedule.removeRow(x[0].row())
+        print(self.schedules)
+        schedule.cancel_job(self.schedules[x[0].row()])
+        del self.schedules[x[0].row()]
+
+
 
     def registerSchedule(self):
         scheduleWindow = ScheduleWindow(self, False, self.clientList)
