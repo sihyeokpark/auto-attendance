@@ -4,8 +4,6 @@ from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 
-import registerFace
-
 mainUi = uic.loadUiType("main.ui")[0]
 loginUi = uic.loadUiType("login.ui")[0]
 
@@ -202,17 +200,11 @@ class LoginWindow(QWidget, loginUi):
         self.setupUi(self)
         self.btn_login.clicked.connect(self.login)
         self.btn_signin.clicked.connect(self.signin)
-        self.btn_registerFace.clicked.connect(self.registerFaceCall)
         self.setWindowTitle("exon login")
         self.parent = mainWindow
         mainWindow.socketInit()
         mainWindow.connecttoServer()
 
-    def registerFaceCall(self):
-        self.hide()
-        self.registerWindow = registerFace.registerFaceWindow()
-        self.registerWindow.exec()
-        self.show()
 
     def login(self):
         if self.parent.conFlag:

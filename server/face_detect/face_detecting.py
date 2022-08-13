@@ -19,7 +19,7 @@ video_capture = cv2.VideoCapture(0)
 start_time = time.time()
 
 # Load a sample picture and learn how to recognize it.
-path = "./faces"
+path = "faces"
 file_list = os.listdir(path)
 
 imgList = []

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>262</width>
-    <height>203</height>
+    <width>248</width>
+    <height>167</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -130,39 +130,6 @@ QPushButton:hover {
    </property>
    <property name="text">
     <string>Sign in</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btn_registerFace">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>160</y>
-     <width>211</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Noto Sans KR</family>
-     <pointsize>18</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	border: none;
-	background-color: #2f3545;
-	border-radius: 10px;
-	color: #ffffff;
-}
-QPushButton:hover {
-	background-color: #49526b;
-	color: #ffffff;
-}</string>
-   </property>
-   <property name="text">
-    <string>얼굴 등록</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">

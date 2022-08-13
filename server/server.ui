@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1013</width>
-    <height>404</height>
+    <height>807</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
   <widget class="QTextBrowser" name="tb_log">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>50</y>
+     <x>20</x>
+     <y>440</y>
      <width>256</width>
      <height>341</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QPushButton" name="btnDelete">
    <property name="geometry">
     <rect>
-     <x>800</x>
-     <y>360</y>
+     <x>810</x>
+     <y>750</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -60,8 +60,8 @@ QPushButton:hover {
   <widget class="QPushButton" name="btnModify">
    <property name="geometry">
     <rect>
-     <x>700</x>
-     <y>360</y>
+     <x>710</x>
+     <y>750</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -91,8 +91,8 @@ QPushButton:hover {
   <widget class="QTableWidget" name="twSchedule">
    <property name="geometry">
     <rect>
-     <x>480</x>
-     <y>50</y>
+     <x>490</x>
+     <y>440</y>
      <width>511</width>
      <height>301</height>
     </rect>
@@ -134,8 +134,8 @@ QPushButton:hover {
   <widget class="QPushButton" name="btnRegister">
    <property name="geometry">
     <rect>
-     <x>900</x>
-     <y>360</y>
+     <x>910</x>
+     <y>750</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -165,8 +165,8 @@ QPushButton:hover {
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>20</y>
+     <x>30</x>
+     <y>400</y>
      <width>56</width>
      <height>31</height>
     </rect>
@@ -189,8 +189,8 @@ QPushButton:hover {
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>30</y>
+     <x>290</x>
+     <y>410</y>
      <width>131</width>
      <height>16</height>
     </rect>
@@ -210,8 +210,8 @@ QPushButton:hover {
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>480</x>
-     <y>30</y>
+     <x>500</x>
+     <y>410</y>
      <width>101</width>
      <height>16</height>
     </rect>
@@ -231,11 +231,44 @@ QPushButton:hover {
   <widget class="QTextBrowser" name="tb_user">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>50</y>
+     <x>310</x>
+     <y>440</y>
      <width>141</width>
      <height>341</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRegisterFace">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>30</y>
+     <width>231</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Noto Sans KR</family>
+     <pointsize>18</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	border: none;
+	background-color: #2f3545;
+	border-radius: 10px;
+	color: #ffffff;
+}
+QPushButton:hover {
+	background-color: #49526b;
+	color: #ffffff;
+}</string>
+   </property>
+   <property name="text">
+    <string>얼굴 등록</string>
    </property>
   </widget>
  </widget>

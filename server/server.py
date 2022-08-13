@@ -9,6 +9,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import uic, QtGui
 
+import registerFace
+
 serverUi = uic.loadUiType('server.ui')[0]
 scheduleUi = uic.loadUiType('schedule.ui')[0]
 
@@ -92,7 +94,8 @@ class ServerWindow(QWidget, serverUi):
         self.setWindowTitle("exon server")
 
         self.clientList = []
-        self.HOST = '192.168.35.82'
+        ##self.HOST = '192.168.35.82'
+        self.HOST = '127.0.0.1'
         self.PORT = 6666
 
         self.dbFileName = 'schedule.db'
@@ -109,6 +112,7 @@ class ServerWindow(QWidget, serverUi):
         self.serverSocket.bind((self.HOST, self.PORT))
         self.serverSocket.listen()
 
+        self.btnRegisterFace.clicked.connect(self.registerFace)
         self.btnRegister.clicked.connect(self.registerSchedule)
         self.btnModify.clicked.connect(self.modifySchedule)
         self.btnDelete.clicked.connect(self.deleteSchedule)
@@ -128,6 +132,12 @@ class ServerWindow(QWidget, serverUi):
 
         runSchedule = RunSchedule(self)
         runSchedule.start()
+
+    def registerFace(self):
+        self.hide()
+        self.registerWindow = registerFace.registerFaceWindow()
+        self.registerWindow.exec()
+        self.show()
 
     @pyqtSlot()
     def initScheduleTable(self):

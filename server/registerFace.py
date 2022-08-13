@@ -90,16 +90,16 @@ class registerFaceWindow(QDialog, mainUi):
         if not self.captureFlag :
             QMessageBox.information(self, 'infomation', '얼굴 사진을 찍어 주세요..')
         elif (userName == None) or (userGrade == None) or (userClass == None) or (userNumber == None):
-            QMessageBox.information(self, 'infomation', '인적사항을 적어주세요.')
+            QMessageBox.information(self, 'infomation', '인적사항을 적어주세요. (학년, 반, 번호는 숫자로 적어주세요)')
         else:
-            fileName = (f'../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg')
+            fileName = (f'./face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg')
             self.imwrite(fileName,self.captureImage)
             #cv2.imwrite(f"../face_detect/faces/{userName}_{userGrade}{userClass}{userNumber}.jpg", self.captureImage)  # 한국어는 안됨..
             QMessageBox.information(self, 'infomation', '얼굴 등록이 성공 하였습니다..')
             self.closeFlag = True
             self.close()
 
-    def imwrite(self,filename, img, params=None):
+    def imwrite(self, filename, img, params=None):
         try:
             ext = os.path.splitext(filename)[1]
             result, n = cv2.imencode(ext, img, params)
