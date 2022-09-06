@@ -1,7 +1,5 @@
 import socket
 import sqlite3
-import time
-import os
 import sys
 import schedule
 
@@ -11,6 +9,13 @@ from PyQt5 import uic, QtGui
 
 import registerFace
 import utils
+import face_recognition
+import cv2
+import numpy as np
+import os
+import time
+import csv
+
 
 serverUi = uic.loadUiType('server.ui')[0]
 scheduleUi = uic.loadUiType('schedule.ui')[0]
@@ -106,13 +111,16 @@ class ServerWindow(QWidget, serverUi):
         self.schedules = []
         self.createDb()
         self.initScheduleTable()
-
+        self.videoFlag = False
+        self.vidoThread = None
+        self.checkPerson = []
 
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.serverSocket.bind((self.HOST, self.PORT))
         self.serverSocket.listen()
 
+        self.btn_start.clicked.connect(self.startVideo)
         self.btnRegisterFace.clicked.connect(self.registerFace)
         self.btnRegister.clicked.connect(self.registerSchedule)
         self.btnModify.clicked.connect(self.modifySchedule)
@@ -133,7 +141,22 @@ class ServerWindow(QWidget, serverUi):
 
         runSchedule = RunSchedule(self)
         runSchedule.start()
-
+        self.setVideoImage()
+    def setVideoImage(self):
+        self.lbl_video.setPixmap(QtGui.QPixmap("img/video.png"))
+    def startVideo(self):
+        if not self.videoFlag:
+            self.videoFlag = True
+            self.btn_start.setText("Stop")
+            self.vidoThread = VideoThread(self)
+            self.vidoThread.start()
+        else:
+            if self.vidoThread != None :
+                self.videoFlag = False
+                self.btn_start.setText("Start")
+                self.vidoThread.stop()
+                self.setVideoImage()
+        pass
     def registerFace(self):
         self.hide()
         self.registerWindow = registerFace.registerFaceWindow()
@@ -244,6 +267,149 @@ class ServerWindow(QWidget, serverUi):
             for i in range(5):
                  self.twSchedule.setItem(row, i, QTableWidgetItem(itemList[i]))
 
+class VideoThread(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def stop(self):
+        self.working = False
+        self.quit()
+        self.wait(5000)  # 5000ms = 5s
+    def run(self):
+
+        self.working = True
+        # openCV 카메라를 오픈하는 api
+        video_capture = cv2.VideoCapture(0)
+
+        ########################################
+        # face_recognition Library를 사용하여
+        # 딥러닝 기반으로 제작된 dlib의 최첨단 얼굴 인식 기능을 사용하여 구축 했습니다.
+        # 이 모델은 Labeled Faces in the Wild 기준으로 99.38%의 정확도를 가집니다.
+        # How to use face_recognition API
+        # https://face-recognition.readthedocs.io/en/latest/face_recognition.html
+
+        # 이미지 학습(?) 시간 체크
+        start_time = time.time()
+
+        # Load a sample picture and learn how to recognize it.
+        path = "face_detect/faces"
+        file_list = os.listdir(path)
+
+        imgList = []
+        faceEncodingList = []
+        faceNameList = []
+        encoding = []
+
+        # 얼굴 배열 읽어오기
+        openFile = './face_detect/faces/face_detecting.csv'
+        with open(openFile, 'r') as f:
+            rdr = csv.reader(f)
+            for i, line in enumerate(rdr):
+                nparr = np.array(line)
+                floatarr = nparr.astype(np.float64)
+                faceEncodingList.append(floatarr)
+
+        # 이름 배열 읽어오기
+        openFile = './face_detect/faces/face_detecting_name.csv'
+        with open(openFile, 'r') as f:
+            rdr = csv.reader(f)
+            for i, line in enumerate(rdr):
+                faceNameList.append(''.join(line))
+
+        print(time.time() - start_time)
+
+        # Create arrays of known face encodings and their names
+        # known_face_encodings = faceEncodingList
+        # known_face_names = faceNameList
+
+        known_face_encodings = faceEncodingList
+        known_face_names = faceNameList
+        ########################################
+
+        # Initialize some variables
+        face_locations = []
+        face_encodings = []
+        face_names = []
+        process_this_frame = True
+        while self.working:
+            ret, frame = video_capture.read()
+            if ret < 0:
+                print("카메라가 열리지 않았습니다 다시 한번 확인해 주세요.")
+                pass
+
+            # Resize frame of video to 1/4 size for faster face recognition processing
+            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+            rgb_small_frame = small_frame[:, :, ::-1]
+
+            # Only process every other frame of video to save time
+            if process_this_frame:
+                # Find all the faces and face encodings in the current frame of video
+                face_locations = face_recognition.face_locations(rgb_small_frame)
+                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+
+                face_names = []
+                for face_encoding in face_encodings:
+                    # See if the face is a match for the known face(s)
+                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                    name = "Unknown"
+
+                    # # If a match was found in known_face_encodings, just use the first one.
+                    # if True in matches:
+                    #     first_match_index = matches.index(True)
+                    #     name = known_face_names[first_match_index]
+
+                    # Or instead, use the known face with the smallest distance to the new face
+                    face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                    best_match_index = np.argmin(face_distances)
+                    if matches[best_match_index]:
+                        name = known_face_names[best_match_index]
+
+                    face_names.append(name)
+
+            process_this_frame = not process_this_frame
+
+            # 인식이 된 최초의 시간을 버퍼에 저장한 후에 이름과 출석 시간을 보여준다..
+            # 현재 시간을 알아오는 PYTHON
+
+            # Display the results
+            for (top, right, bottom, left), name in zip(face_locations, face_names):
+                now = time.localtime()
+                if not face_names in self.parent.checkPerson:
+                    self.parent.checkPerson.append(face_names)
+                    self.parent.addLog(f"{time.strftime('%Y.%m.%d: %H:%M:%S', now)} - {face_names} 출석 완료.")
+                    # 이거 하루에 한 번 아침에 초기화 시켜줘야함
+                # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+                top *= 4
+                right *= 4
+                bottom *= 4
+                left *= 4
+
+                # Draw a box around the face
+                cv2.rectangle(frame, (left, top), (right, bottom), (255, 0, 0), 1)
+
+                # Draw a label with a name below the face
+                cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255, 0, 0), cv2.FILLED)
+                font = cv2.FONT_HERSHEY_DUPLEX
+                cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+
+            # Display the resulting image
+            ######cv2.imshow('Video', frame)
+            img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # bgr을 rgb로 변환
+            h, w, c = img.shape  # 이미지 파일 모양을 return
+            qImg = QtGui.QImage(img.data, w, h, w * c, QtGui.QImage.Format_RGB888)
+            pixmap = QtGui.QPixmap.fromImage(qImg)
+            self.parent.lbl_video.setPixmap(pixmap)
+
+            # Hit 'q' on the keyboard to quit!
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        # Release handle to the webcam
+        video_capture.release()
+        cv2.destroyAllWindows()
 class RunSchedule(QThread):
     def __init__(self, parent):
         super().__init__(parent)
@@ -331,7 +497,8 @@ class mainThread(QThread):
 
             while True:
                 data = self.clientSocket.recv(1024)
-                msg = utils.removeBreakText(data)
+                #msg = utils.removeBreakText(data)
+                msg = data.decode()
                 msgList = msg.split('/')
                 if msgList[0] == 'Chat':
                     if msgList[1] == 'Send':
