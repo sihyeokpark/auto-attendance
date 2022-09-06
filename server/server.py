@@ -10,6 +10,7 @@ from PyQt5.QtCore import *
 from PyQt5 import uic, QtGui
 
 import registerFace
+import utils
 
 serverUi = uic.loadUiType('server.ui')[0]
 scheduleUi = uic.loadUiType('schedule.ui')[0]
@@ -95,7 +96,7 @@ class ServerWindow(QWidget, serverUi):
 
         self.clientList = []
         ##self.HOST = '192.168.35.82'
-        self.HOST = '127.0.0.1'
+        self.HOST = '192.168.35.188'
         self.PORT = 6666
 
         self.dbFileName = 'schedule.db'
@@ -330,8 +331,7 @@ class mainThread(QThread):
 
             while True:
                 data = self.clientSocket.recv(1024)
-                # msg = utils.removeBreakText(data)
-                msg = data.decode()
+                msg = utils.removeBreakText(data)
                 msgList = msg.split('/')
                 if msgList[0] == 'Chat':
                     if msgList[1] == 'Send':

@@ -21,7 +21,7 @@ class MainWindow(QMainWindow, mainUi):
 
         self.id = ''
         self.curBtnId = 'all'
-        self.HOST = '192.168.35.82'
+        self.HOST = '192.168.35.188'
         self.PORT = 6666
 
         self.conFlag = False
