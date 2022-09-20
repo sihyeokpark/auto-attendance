@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 import sqlite3
 import sys
@@ -126,8 +127,8 @@ class ServerWindow(QWidget, serverUi):
         self.btnModify.clicked.connect(self.modifySchedule)
         self.btnDelete.clicked.connect(self.deleteSchedule)
 
-        idRefreshThread = userIDRefresh(self)
-        idRefreshThread.start()
+        #idRefreshThread = userIDRefresh(self)
+        #idRefreshThread.start()
 
         print('server start')
 
@@ -454,24 +455,9 @@ class makeThread(QThread):
         self.parent.serverSocket.close()
 
 # 설정된 시간 마다 접속된 Client의 user id를 refresh하는 Thread
-class userIDRefresh(QThread):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.parent = parent
 
-    def run(self):
-        while True:
-            time.sleep(1)
-            try:
-                idList = []
-                for i in self.parent.clientList:
-                    idList.append(i[1])
+# 이거 요청할 때만 주게 바꾸기
 
-                for client in self.parent.clientList:
-                    client[0].send(('FriendList/Receive/' + str(idList)).encode())
-
-            except:
-                print("userIDRefresh Thread Error!!")
 
 
 class mainThread(QThread):
@@ -496,9 +482,14 @@ class mainThread(QThread):
             cur = conn.cursor()
 
             while True:
-                data = self.clientSocket.recv(1024)
-                #msg = utils.removeBreakText(data)
-                msg = data.decode()
+                try :
+                    data = self.clientSocket.recv(1024)
+                except ConnectionAbortedError as e:
+                    print("error = ",e)
+
+                msg = utils.removeBreakText(data)
+                #msg = data.decode()
+                if msg == '': continue
                 msgList = msg.split('/')
                 if msgList[0] == 'Chat':
                     if msgList[1] == 'Send':
@@ -565,12 +556,12 @@ class mainThread(QThread):
 
         except ConnectionResetError as e:
             print('Disconnected by ' + self.addr[0], ':', self.addr[1])
-            self.clientSocket.close()
             # List에서 빠진 Client의 ID를 제거...
             if (self.clientSocket, clientID) in self.parent.parent.clientList:
                 self.parent.parent.clientList.remove((self.clientSocket, clientID))
                 log = self.makeTimeString(f'Logout: {userId}')
                 self.parent.parent.addLog(log)
+            self.clientSocket.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
