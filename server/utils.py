@@ -6,7 +6,8 @@ def removeBreakText(data):
     i = 0
     while not 'a' <= msg[i] <= "z" or 'A' <= msg[i] <= 'Z':
         i += 1
-    msg = msg[i:]
-    if msg.split('/')[0] == 'ogin':
-        msg = msg.replace('ogin', 'Login')
+    if i == 0:
+        msg = msg
+    else:
+        msg = msg[(i-1):]
     return msg

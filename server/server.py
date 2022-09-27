@@ -217,9 +217,8 @@ class ServerWindow(QWidget, serverUi):
         whoList = data[0].split(',')[:-1]
         for client in self.clientList:
             if client[1] in whoList:
-                # print('Schedule/Send/' + data[1])
-                # client[0].send(('Schedule/Send/' + data[1]).encode())
                 client[0].send((f'Chat/Send/[스케줄] {data[1]}').encode())
+                self.addLog(f'Chat/Send/[스케줄] {data[1]}')
 
 
     def deleteSchedule(self):
@@ -485,9 +484,23 @@ class mainThread(QThread):
                 try :
                     data = self.clientSocket.recv(1024)
                 except ConnectionAbortedError as e:
-                    print("error = ",e)
+                    print('ConnectionAbortedError by ' + self.addr[0], ':', self.addr[1])
+                    # List에서 빠진 Client의 ID를 제거...
+                    if (self.clientSocket, clientID) in self.parent.parent.clientList:
+                        self.parent.parent.clientList.remove((self.clientSocket, clientID))
+                        log = self.makeTimeString(f'Logout: {userId}')
+                        self.parent.parent.addLog(log)
+                    self.clientSocket.close()
 
                 msg = utils.removeBreakText(data)
+                if msg == '' :
+                    # List에서 빠진 Client의 ID를 제거...
+                    if (self.clientSocket, clientID) in self.parent.parent.clientList:
+                        self.parent.parent.clientList.remove((self.clientSocket, clientID))
+                        log = self.makeTimeString(f'Logout: {userId}')
+                        self.parent.parent.addLog(log)
+                    self.clientSocket.close()
+
                 #msg = data.decode()
                 if msg == '': continue
                 msgList = msg.split('/')
