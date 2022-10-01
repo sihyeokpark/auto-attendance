@@ -148,13 +148,13 @@ class ServerWindow(QWidget, serverUi):
     def startVideo(self):
         if not self.videoFlag:
             self.videoFlag = True
-            self.btn_start.setText("Stop")
+            self.btn_start.setText("출석체크 정지")
             self.vidoThread = VideoThread(self)
             self.vidoThread.start()
         else:
             if self.vidoThread != None :
                 self.videoFlag = False
-                self.btn_start.setText("Start")
+                self.btn_start.setText("출석체크 시작")
                 self.vidoThread.stop()
                 self.setVideoImage()
         pass

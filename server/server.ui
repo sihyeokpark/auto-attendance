@@ -45,16 +45,16 @@
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
-	background-color: #275efe;
+	background-color: #DB4455;
 	border-radius: 10px;
 	color: #ffffff;
 }
 QPushButton:hover {
-	background-color: #274fff;
+	background-color: #a73441;
 }</string>
    </property>
    <property name="text">
-    <string>Delete</string>
+    <string>삭제</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnModify">
@@ -76,16 +76,16 @@ QPushButton:hover {
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
-	background-color: #275efe;
+	background-color: #2f3545;
 	border-radius: 10px;
 	color: #ffffff;
 }
 QPushButton:hover {
-	background-color: #274fff;
+	background-color: #49526b;
 }</string>
    </property>
    <property name="text">
-    <string>Modify</string>
+    <string>수정</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="twSchedule">
@@ -159,7 +159,7 @@ QPushButton:hover {
 }</string>
    </property>
    <property name="text">
-    <string>Register</string>
+    <string>생성</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -183,7 +183,7 @@ QPushButton:hover {
     <string notr="true"/>
    </property>
    <property name="text">
-    <string>Log</string>
+    <string>로그</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -204,7 +204,7 @@ QPushButton:hover {
     </font>
    </property>
    <property name="text">
-    <string>Connected Users</string>
+    <string>연결된 유저</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
@@ -225,7 +225,7 @@ QPushButton:hover {
     </font>
    </property>
    <property name="text">
-    <string>Schedule</string>
+    <string>스케쥴</string>
    </property>
   </widget>
   <widget class="QTextBrowser" name="tb_user">
@@ -241,8 +241,8 @@ QPushButton:hover {
   <widget class="QPushButton" name="btnRegisterFace">
    <property name="geometry">
     <rect>
-     <x>710</x>
-     <y>40</y>
+     <x>610</x>
+     <y>20</y>
      <width>231</width>
      <height>61</height>
     </rect>
@@ -274,7 +274,7 @@ QPushButton:hover {
   <widget class="QLabel" name="lbl_video">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>30</x>
      <y>30</y>
      <width>551</width>
      <height>341</height>
@@ -287,8 +287,8 @@ QPushButton:hover {
   <widget class="QPushButton" name="btn_start">
    <property name="geometry">
     <rect>
-     <x>710</x>
-     <y>110</y>
+     <x>610</x>
+     <y>90</y>
      <width>231</width>
      <height>61</height>
     </rect>
@@ -314,7 +314,7 @@ QPushButton:hover {
 }</string>
    </property>
    <property name="text">
-    <string>Start</string>
+    <string>출석체크 시작</string>
    </property>
   </widget>
  </widget>
