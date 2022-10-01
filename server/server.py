@@ -169,7 +169,6 @@ class ServerWindow(QWidget, serverUi):
         rows = self.selectAllDb()
         self.twSchedule.setRowCount(0)
         for i in range(len(rows)):
-            print()
             if rows[i][1] == '월요일':
                 self.schedules.append(
                     schedule.every().monday.at(rows[i][2]).do(self.executeSchedule, (rows[i][3], rows[i][4])))

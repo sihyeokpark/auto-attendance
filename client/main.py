@@ -1,5 +1,7 @@
 import sys
 import socket
+import time
+
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
@@ -102,6 +104,8 @@ class MainWindow(QMainWindow, mainUi):
         self.recvThread.start()
         self.recvThread.sigShowMain.connect(self.changeDisplay)
         self.recvThread.sigPayload.connect(self.payloadParsing)
+        self.sendFriendListRequest = SendFriendListRequest(self)
+        self.sendFriendListRequest.start()
 
     def payloadParsing(self, payload, msg):
         self.log('pasloadParsing', 1)
@@ -146,6 +150,17 @@ class MainWindow(QMainWindow, mainUi):
                 self.le_chat.setText('')
         else:
             QMessageBox.information(self, 'infomation', '서버와의 연결을 확인하세요..')
+
+class SendFriendListRequest(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):
+        while True:
+            self.parent.clientSocket.send('FriendList/Get'.encode())
+            print('FriendList/Get')
+            time.sleep(1)
 
 
 class recvThread(QThread, QObject):
