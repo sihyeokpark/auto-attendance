@@ -9,6 +9,7 @@ from PyQt5.QtCore import *
 from PyQt5 import uic, QtGui
 
 import registerFace
+import face_detect.makeCsv
 import utils
 import face_recognition
 import cv2
@@ -123,6 +124,7 @@ class ServerWindow(QWidget, serverUi):
 
         self.btn_start.clicked.connect(self.startVideo)
         self.btnRegisterFace.clicked.connect(self.registerFace)
+        self.btnLearnFace.clicked.connect(self.learnFace)
         self.btnRegister.clicked.connect(self.registerSchedule)
         self.btnModify.clicked.connect(self.modifySchedule)
         self.btnDelete.clicked.connect(self.deleteSchedule)
@@ -143,6 +145,10 @@ class ServerWindow(QWidget, serverUi):
         runSchedule = RunSchedule(self)
         runSchedule.start()
         self.setVideoImage()
+
+    def learnFace(self):
+        face_detect.makeCsv.makeCsv()
+        print('dd')
     def setVideoImage(self):
         self.lbl_video.setPixmap(QtGui.QPixmap("img/video.png"))
     def startVideo(self):
