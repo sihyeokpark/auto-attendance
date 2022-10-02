@@ -486,16 +486,18 @@ class mainThread(QThread):
             cur = conn.cursor()
 
             while True:
-                try :
+                try:
                     data = self.clientSocket.recv(1024)
-                except ConnectionAbortedError as e:
-                    print('ConnectionAbortedError by ' + self.addr[0], ':', self.addr[1])
+                except:
+                    pass
+                    # print('빈 메세지: ' + self.addr[0], ':', self.addr[1])
+
                     # List에서 빠진 Client의 ID를 제거...
-                    if (self.clientSocket, clientID) in self.parent.parent.clientList:
-                        self.parent.parent.clientList.remove((self.clientSocket, clientID))
-                        log = self.makeTimeString(f'Logout: {userId}')
-                        self.parent.parent.addLog(log)
-                    self.clientSocket.close()
+                    #if (self.clientSocket, clientID) in self.parent.parent.clientList:
+                    #    self.parent.parent.clientList.remove((self.clientSocket, clientID))
+                    #    log = self.makeTimeString(f'Logout: {userId}')
+                    #    self.parent.parent.addLog(log)
+                    #self.clientSocket.close()
 
                 msg = utils.removeBreakText(data)
                 if msg == '' :
