@@ -89,13 +89,13 @@ class MainWindow(QMainWindow, mainUi):
 
     def connecttoServer(self):
         if self.conFlag:
-            QMessageBox.information(self, "infomation", "이미 서버와 연결이 되었습니다..")
+            QMessageBox.information(self, "information", "이미 서버와 연결이 되었습니다..")
             return
         try:
             self.clientSocket.connect((self.HOST, self.PORT))
         except socket.error as msg:
             self.log("socket Error =: %s\n terminating program" % msg, 0)
-            QMessageBox.information(self, "infomation", "서버와의 연결을 확인하세요..")
+            QMessageBox.information(self, "information", "서버와의 연결을 확인하세요..")
             return
 
         self.log('socket connect success!!', 0)
@@ -121,7 +121,7 @@ class MainWindow(QMainWindow, mainUi):
             if msgList[1] == 'Send':
                 self.log('Schedule', 1)
                 print(msgList)
-                QMessageBox.information(self, 'infomation', msgList[2])
+                QMessageBox.information(self, 'information', msgList[2])
         if payload == 'Login':
             if msgList[1] == 'Error':
                 QMessageBox.information(self, 'error', msgList[2])
@@ -191,7 +191,6 @@ class recvThread(QThread, QObject):
                         self.parent.tb_chat.append('<span style=\"color:#ff0000;\" >' + msgList[2] + '</span>')
                     else:
                         self.parent.tb_chat.append('<span style=\"color:#000000;\" >' + msgList[2] + '</span>')
-
             elif msgList[0] == 'Login':
                 if msgList[1] == 'Success':
                     self.log('login success', 0)

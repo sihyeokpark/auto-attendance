@@ -42,7 +42,7 @@ class registerFaceWindow(QDialog, mainUi):
         elif not self.rbLandmark.isChecked():
             self.isLandmark = False
 
-
+    # 영상 속에서 얼굴 영역을 추출하고 얼굴의 68개 randmarks를 찾아내는 Code..
     def detect(self, gray, frame):
         # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
         faces = self.faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100),

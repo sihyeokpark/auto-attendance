@@ -222,8 +222,10 @@ class ServerWindow(QWidget, serverUi):
         whoList = data[0].split(',')[:-1]
         for client in self.clientList:
             if client[1] in whoList:
-                client[0].send((f'Chat/Send/[스케줄] {data[1]}').encode())
-                self.addLog(f'Chat/Send/[스케줄] {data[1]}')
+                # client[0].send((f'Chat/Send/[스케줄] {data[1]}').encode())
+                # self.addLog(f'Chat/Send/[스케줄] {data[1]}')
+                client[0].send((f'Schedule/Send/[스케줄] {data[1]}').encode())
+                self.addLog(f'Schedule/Send/[스케줄] {data[1]}')
 
 
     def deleteSchedule(self):
@@ -322,7 +324,7 @@ class VideoThread(QThread):
             for i, line in enumerate(rdr):
                 faceNameList.append(''.join(line))
 
-        print(time.time() - start_time)
+        print(f'읽어오는거: {time.time() - start_time}')
 
         # Create arrays of known face encodings and their names
         # known_face_encodings = faceEncodingList
