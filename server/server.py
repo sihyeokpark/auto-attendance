@@ -113,6 +113,7 @@ class ServerWindow(QWidget, serverUi):
         self.schedules = []
         self.createDb()
         self.initScheduleTable()
+        print(self.schedules)
         self.videoFlag = False
         self.vidoThread = None
         self.checkPerson = []
@@ -174,6 +175,7 @@ class ServerWindow(QWidget, serverUi):
     def initScheduleTable(self):
         rows = self.selectAllDb()
         self.twSchedule.setRowCount(0)
+        print(len(rows))
         for i in range(len(rows)):
             if rows[i][1] == '월요일':
                 self.schedules.append(
@@ -219,13 +221,16 @@ class ServerWindow(QWidget, serverUi):
             self.dbFlag = True
 
     def executeSchedule(self, data):
-        whoList = data[0].split(',')[:-1]
+        whoList = data[0].replace(' ', '').split(',')
+        print(whoList)
+        print(self.clientList)
         for client in self.clientList:
             if client[1] in whoList:
                 # client[0].send((f'Chat/Send/[스케줄] {data[1]}').encode())
                 # self.addLog(f'Chat/Send/[스케줄] {data[1]}')
                 client[0].send((f'Schedule/Send/[스케줄] {data[1]}').encode())
                 self.addLog(f'Schedule/Send/[스케줄] {data[1]}')
+                time.sleep(1)
 
 
     def deleteSchedule(self):
@@ -248,7 +253,7 @@ class ServerWindow(QWidget, serverUi):
 
     def modifySchedule(self):
         x = self.twSchedule.selectedIndexes()
-        itemList = [self.twSchedule.item(x[0].row(), 0).text(), self.twSchedule.item(x[0].row(), 1).text(), self.twSchedule.item(x[0].row(), 2).text(), self.twSchedule.item(x[0].row(), 3).text()]
+        itemList = [self.twSchedule.item(x[0].row(), 0).text(), self.twSchedule.item(x[0].row(), 1).text(), self.twSchedule.item(x[0].row(), 2).text(), self.twSchedule.item(x[0].row(), 3).text(), self.twSchedule.item(x[0].row(), 4).text()]
         scheduleWindow = ScheduleWindow(self, True, self.clientList, itemList)
         scheduleWindow.setSchedule.connect(self.setItem)
         scheduleWindow.initSchedule.connect(self.initScheduleTable)
